@@ -1,0 +1,154 @@
+<idea-plugin require-restart="false">
+    <id>com.github.toxdev.fish</id>
+    <name>Fish Shell</name>
+    <vendor url="https://plugins.jetbrains.com/vendor/jetbrains-fish-shell">JetBrains Fish Shell</vendor>
+
+    <category>Languages</category>
+
+    <change-notes><![CDATA[
+    See <a href="https://github.com/tox-dev/jetbrains-fish/releases">GitHub Releases</a> for changelog.
+    ]]></change-notes>
+
+    <description><![CDATA[
+    <p>Comprehensive language support for <a href="https://fishshell.com/">Fish shell</a> scripts with advanced IDE features.</p>
+
+    <h3>Syntax Highlighting</h3>
+    <ul>
+        <li>Keywords, variables, strings, comments, operators</li>
+        <li>Redirections and command substitution</li>
+        <li>Customizable color schemes</li>
+    </ul>
+
+    <h3>Code Intelligence</h3>
+    <ul>
+        <li>Code completion for keywords, builtins, and functions</li>
+        <li>Go to definition for functions</li>
+        <li>Find usages for functions</li>
+        <li>Quick documentation for builtins, keywords, and operators</li>
+    </ul>
+
+    <h3>Navigation & Structure</h3>
+    <ul>
+        <li>Structure view with function navigation</li>
+        <li>Breadcrumbs navigation</li>
+        <li>Code folding for functions and control structures</li>
+        <li>Brace matching</li>
+    </ul>
+
+    <h3>Editing Support</h3>
+    <ul>
+        <li>Comment/uncomment with Ctrl+/</li>
+        <li>Code formatting via fish_indent</li>
+        <li>Run configurations to execute scripts</li>
+        <li>Run gutter icon for quick script execution</li>
+    </ul>
+
+    <h3>Code Quality</h3>
+    <ul>
+        <li>Deprecated syntax inspection</li>
+        <li>Unused variable inspection</li>
+    </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- File Type -->
+        <fileType
+            name="Fish"
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.FishFileType"
+            fieldName="INSTANCE"
+            extensions="fish"/>
+
+        <!-- Parser -->
+        <lang.parserDefinition
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.parser.FishParserDefinition"/>
+
+        <!-- Syntax Highlighting -->
+        <lang.syntaxHighlighterFactory
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.highlighting.FishSyntaxHighlighterFactory"/>
+
+        <!-- Color Settings -->
+        <colorSettingsPage
+            implementation="com.github.toxdev.fish.highlighting.FishColorSettingsPage"/>
+
+        <!-- Commenter (Ctrl+/) -->
+        <lang.commenter
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.FishCommenter"/>
+
+        <!-- Brace Matching -->
+        <lang.braceMatcher
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.FishBraceMatcher"/>
+
+        <!-- Code Folding -->
+        <lang.foldingBuilder
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.FishFoldingBuilder"/>
+
+        <!-- Structure View -->
+        <lang.psiStructureViewFactory
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.structure.FishStructureViewFactory"/>
+
+        <!-- Breadcrumbs -->
+        <breadcrumbsInfoProvider
+            implementation="com.github.toxdev.fish.FishBreadcrumbsProvider"/>
+
+        <!-- Code Completion -->
+        <completion.contributor
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.completion.FishCompletionContributor"/>
+
+        <!-- Go to Definition -->
+        <psi.referenceContributor
+            language="Fish"
+            implementation="com.github.toxdev.fish.reference.FishReferenceContributor"/>
+
+        <!-- Find Usages -->
+        <lang.findUsagesProvider
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.findUsages.FishFindUsagesProvider"/>
+
+        <!-- External Formatter (fish_indent) -->
+        <formattingService
+            implementation="com.github.toxdev.fish.formatting.FishExternalFormatter"/>
+
+        <!-- Inspections -->
+        <localInspection
+            language="Fish"
+            shortName="FishDeprecatedSyntax"
+            displayName="Deprecated Fish syntax"
+            groupName="Fish"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.github.toxdev.fish.inspection.FishDeprecatedSyntaxInspection"/>
+
+        <localInspection
+            language="Fish"
+            shortName="FishUnusedVariable"
+            displayName="Unused local variable"
+            groupName="Fish"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.github.toxdev.fish.inspection.FishUnusedVariableInspection"/>
+
+        <!-- Run Configuration -->
+        <configurationType
+            implementation="com.github.toxdev.fish.run.FishRunConfigurationType"/>
+
+        <!-- Run Line Marker -->
+        <runLineMarkerContributor
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.run.FishRunLineMarkerProvider"/>
+
+        <!-- Documentation -->
+        <lang.documentationProvider
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.documentation.FishDocumentationProvider"/>
+    </extensions>
+</idea-plugin>

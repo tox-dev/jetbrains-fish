@@ -1,0 +1,7 @@
+/.gradle
+/.claude
+/build
+/.idea
+/src/main/gen
+/.kotlin
+/.intellijPlatform

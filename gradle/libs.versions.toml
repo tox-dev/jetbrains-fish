@@ -1,0 +1,31 @@
+[versions]
+changelog = "2.5.0"
+grammarKit = "2023.3.0.1"
+intelliJPlatform = "2.10.5"
+junitPlatformLauncher = "6.0.2"
+jupiter = "6.0.2"
+kotlin = "2.3.0"
+kover = "0.9.4"
+ktlint = "14.0.1"
+mockk = "1.14.7"
+testLogger = "4.0.0"
+versionPlugin = "0.53.0"
+versionUpdate = "1.0.1"
+
+[libraries]
+junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatformLauncher" }
+jupiter = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+jupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
+jupiterParams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+[plugins]
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+grammarKit = { id = "org.jetbrains.grammarkit", version.ref = "grammarKit" }
+intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+testLogger = { id = "com.adarshr.test-logger", version.ref = "testLogger" }
+versionPlugin = { id = "com.github.ben-manes.versions", version.ref = "versionPlugin" }
+versionUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionUpdate" }
