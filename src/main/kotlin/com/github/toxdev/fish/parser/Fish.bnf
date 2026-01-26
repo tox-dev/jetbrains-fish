@@ -1,0 +1,158 @@
+{
+  parserClass="com.github.toxdev.fish.parser.FishParser"
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Fish"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.toxdev.fish.psi"
+  psiImplPackage="com.github.toxdev.fish.psi.impl"
+
+  elementTypeHolderClass="com.github.toxdev.fish.psi.FishTypes"
+  elementTypeClass="com.github.toxdev.fish.psi.FishElementType"
+  tokenTypeClass="com.github.toxdev.fish.psi.FishTokenType"
+  psiImplUtilClass="com.github.toxdev.fish.psi.FishPsiImplUtil"
+
+  consumeTokenMethod(".*")="consumeTokenFast"
+
+  tokens=[
+    WORD
+    VARIABLE
+    NUMBER
+    COMMENT
+    SHEBANG
+    SINGLE_QUOTE
+    DOUBLE_QUOTE
+    STRING_CONTENT
+    ESCAPE
+    PIPE
+    AND_AND
+    OR_OR
+    BACKGROUND
+    REDIRECT
+    SEMICOLON
+    NEWLINE
+    LPAREN
+    RPAREN
+    LBRACE
+    RBRACE
+    LBRACKET
+    RBRACKET
+    WHITE_SPACE
+    BAD_CHARACTER
+  ]
+}
+
+fishFile ::= item*
+
+private item ::= chainedStatement | terminator | COMMENT | SHEBANG
+
+private terminator ::= SEMICOLON | NEWLINE
+
+chainedStatement ::= chainableStatement (logicalOp NEWLINE* chainableStatement)*
+
+private chainableStatement ::= functionBlock | commandBlock
+
+functionBlock ::= 'function' functionName argumentList? terminator statementBody 'end' redirectList? BACKGROUND? {
+  pin=1
+  methods=[getName setName getNameIdentifier]
+}
+
+private commandBlock ::= pipeline
+
+functionName ::= WORD | VARIABLE {
+  mixin="com.github.toxdev.fish.psi.FishNamedElementImpl"
+  implements="com.github.toxdev.fish.psi.FishNamedElement"
+}
+
+loopVariable ::= WORD
+
+commandStatement ::= pipeline (logicalOp NEWLINE* pipeline)*
+
+private pipeline ::= command (PIPE NEWLINE* command)*
+
+private command ::= commandPrefix* coreCommand
+
+private commandPrefix ::= 'and' | 'or' | 'not' | 'builtin' | 'command' | 'exec' | 'time'
+
+private coreCommand ::= ifBlock
+                      | whileBlock
+                      | forBlock
+                      | switchBlock
+                      | beginBlock
+                      | braceBlock
+                      | subshellBlock
+                      | simpleCommand
+
+ifBlock ::= 'if' condition terminator? statementBody elseIfClause* elseClause? 'end' redirectList? BACKGROUND? {
+  pin=1
+}
+
+private elseIfClause ::= 'else' 'if' condition terminator? statementBody
+
+private elseClause ::= 'else' terminator? statementBody
+
+whileBlock ::= 'while' condition terminator? statementBody 'end' redirectList? BACKGROUND? {
+  pin=1
+}
+
+forBlock ::= 'for' loopVariable 'in' argumentList terminator? statementBody 'end' redirectList? BACKGROUND? {
+  pin=1
+}
+
+switchBlock ::= 'switch' argument terminator? caseClause* 'end' redirectList? BACKGROUND? {
+  pin=1
+}
+
+private caseClause ::= 'case' argument+ terminator? statementBody
+
+beginBlock ::= 'begin' terminator? statementBody 'end' redirectList? BACKGROUND? {
+  pin=1
+}
+
+braceBlock ::= LBRACE statementBody RBRACE redirectList? BACKGROUND?
+
+subshellBlock ::= LPAREN statementBody RPAREN redirectList? BACKGROUND?
+
+private simpleCommand ::= commandWord argumentList? redirectList? BACKGROUND?
+
+private commandWord ::= !reservedWord (WORD | VARIABLE | LBRACKET | string | builtinKeyword)
+
+private reservedWord ::= 'end' | 'else' | 'case' | 'if' | 'while' | 'for' | 'switch' | 'begin' | 'function'
+
+private builtinKeyword ::= 'break' | 'continue' | 'return'
+                         | 'set' | 'read' | 'test' | 'string' | 'status'
+
+private logicalOp ::= AND_AND | OR_OR | SEMICOLON
+
+argumentList ::= argument+
+
+argument ::= WORD
+           | VARIABLE
+           | NUMBER
+           | ESCAPE
+           | RBRACKET
+           | string
+           | commandSubstitution
+           | bracedExpansion
+           | bracketExpansion
+
+string ::= SINGLE_QUOTE stringContent* SINGLE_QUOTE
+         | DOUBLE_QUOTE doubleQuotedContent* DOUBLE_QUOTE
+
+private stringContent ::= STRING_CONTENT | ESCAPE
+
+private doubleQuotedContent ::= STRING_CONTENT | VARIABLE | ESCAPE | commandSubstitution
+
+commandSubstitution ::= LPAREN statementBody RPAREN
+
+bracedExpansion ::= LBRACE argumentList? RBRACE
+
+bracketExpansion ::= LBRACKET argument* RBRACKET
+
+redirectList ::= redirectExpr+
+
+redirectExpr ::= REDIRECT argument?
+
+private statementBody ::= item*
+
+private condition ::= commandStatement
