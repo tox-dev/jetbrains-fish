@@ -44,7 +44,8 @@ dependencies {
     testRuntimeOnly(libs.junitPlatformLauncher)
     testRuntimeOnly("junit:junit:4.13.2") // legacy JUnit 4 support
     intellijPlatform {
-        intellijIdeaCommunity(providers.gradleProperty("platformVersion"))
+        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
+        plugin("com.redhat.devtools.lsp4ij", libs.versions.lsp4ij.get())
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.JUnit5)

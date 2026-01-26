@@ -1,0 +1,17 @@
+<idea-plugin>
+    <!-- LSP4IJ Support (Community Edition with LSP4IJ plugin) -->
+    <extensions defaultExtensionNs="com.redhat.devtools.lsp4ij">
+        <server id="fish-lsp"
+                name="Fish Language Server"
+                factoryClass="com.github.toxdev.fish.lsp4ij.FishLanguageServerFactory">
+            <description><![CDATA[
+            <p>Language server for Fish shell scripts providing code intelligence features.</p>
+            <p>Requires <a href="https://github.com/ndonfris/fish-lsp#installation">fish-lsp</a> to be installed.</p>
+            ]]></description>
+        </server>
+
+        <languageMapping language="Fish"
+                         serverId="fish-lsp"
+                         languageId="fish"/>
+    </extensions>
+</idea-plugin>
