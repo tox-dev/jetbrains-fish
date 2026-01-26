@@ -23,5 +23,11 @@ class FishCompletionContributor : CompletionContributor() {
             PlatformPatterns.psiElement(),
             FishFunctionCompletionProvider(),
         )
+
+        extend(
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(),
+            FishSubcommandCompletionProvider(),
+        )
     }
 }

@@ -18,6 +18,7 @@ class FishDocumentationProvider : AbstractDocumentationProvider() {
         return when (target.elementType) {
             FishTypes.VARIABLE -> FishDocumentation.getVariableDoc(target.text)
             FishTypes.WORD -> getWordDocumentation(target)
+            FishTypes.ARGUMENT -> getArgumentDocumentation(target)
             FishTypes.PIPE -> FishDocumentation.getOperatorDoc("|")
             FishTypes.AND_AND -> FishDocumentation.getOperatorDoc("&&")
             FishTypes.OR_OR -> FishDocumentation.getOperatorDoc("||")
@@ -34,6 +35,11 @@ class FishDocumentationProvider : AbstractDocumentationProvider() {
         contextElement: PsiElement?,
         targetOffset: Int,
     ): PsiElement? = contextElement
+
+    private fun getArgumentDocumentation(element: PsiElement): String? {
+        val word = element.children.firstOrNull { it.elementType == FishTypes.WORD } ?: return null
+        return getWordDocumentation(word)
+    }
 
     private fun getWordDocumentation(element: PsiElement): String? {
         val text = element.text
@@ -56,7 +62,9 @@ class FishDocumentationProvider : AbstractDocumentationProvider() {
         return FishDocumentation.getCommandDoc("$parentCommand $subcommand")
     }
 
-    private fun findPrecedingCommand(element: PsiElement): String? {
+    private fun findPrecedingCommand(element: PsiElement) = findPrecedingWord(element) ?: findPrecedingWordViaParent(element)
+
+    private fun findPrecedingWord(element: PsiElement): String? {
         var prev = element.prevSibling
         while (prev != null) {
             when (prev.elementType) {
@@ -68,7 +76,38 @@ class FishDocumentationProvider : AbstractDocumentationProvider() {
         return null
     }
 
+    private fun findPrecedingWordViaParent(element: PsiElement): String? {
+        var current = element.parent
+        while (current != null) {
+            var prev = current.prevSibling
+            while (prev != null) {
+                when (prev.elementType) {
+                    FishTokenTypes.WHITE_SPACE -> prev = prev.prevSibling
+                    FishTypes.WORD -> return prev.text
+                    else -> {
+                        val word = prev.children.firstOrNull { it.elementType == FishTypes.WORD }
+                        if (word != null) return word.text
+                        prev = prev.prevSibling
+                    }
+                }
+            }
+            current = current.parent
+        }
+        return null
+    }
+
     private fun isCommandPosition(element: PsiElement): Boolean {
+        if (!isFirstInParent(element)) return false
+        var current = element.parent
+        while (current != null) {
+            if (!isFirstInParent(current)) return false
+            if (current.elementType == FishTypes.ARGUMENT_LIST) return false
+            current = current.parent
+        }
+        return true
+    }
+
+    private fun isFirstInParent(element: PsiElement): Boolean {
         var prev = element.prevSibling
         while (prev != null) {
             when (prev.elementType) {

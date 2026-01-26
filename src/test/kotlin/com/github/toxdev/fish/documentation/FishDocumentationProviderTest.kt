@@ -212,6 +212,7 @@ class FishDocumentationProviderTest {
             }
         every { element.text } returns text
         every { element.prevSibling } returns if (hasPrevSibling) mockk() else null
+        every { element.parent } returns null
         return element
     }
 
@@ -240,6 +241,7 @@ class FishDocumentationProviderTest {
             }
         every { element.text } returns subcommand
         every { element.prevSibling } returns whitespace
+        every { element.parent } returns null
         return element
     }
 }
