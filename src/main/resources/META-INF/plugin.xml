@@ -45,9 +45,11 @@
         <li>Run gutter icon for quick script execution</li>
     </ul>
 
-    <h3>Requirements</h3>
-    <p>For code intelligence features, install <a href="https://github.com/ndonfris/fish-lsp#installation">fish-lsp</a>.</p>
-    <p>Community Edition users need the <a href="https://plugins.jetbrains.com/plugin/23257-lsp4ij">LSP4IJ plugin</a>.</p>
+    <h3>Setup</h3>
+    <p><b>fish-lsp (Recommended):</b> For full code intelligence, install <a href="https://github.com/ndonfris/fish-lsp">fish-lsp</a>:</p>
+    <pre>npm install -g fish-lsp</pre>
+    <p>The plugin auto-detects fish-lsp in PATH, or configure it in <b>Settings → Tools → Fish Shell</b>.</p>
+    <p><b>Community Edition:</b> Install the <a href="https://plugins.jetbrains.com/plugin/23257-lsp4ij">LSP4IJ plugin</a> for LSP support. Ultimate editions have built-in LSP support.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
