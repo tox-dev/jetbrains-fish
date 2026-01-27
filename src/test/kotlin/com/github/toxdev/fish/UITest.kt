@@ -72,14 +72,14 @@ class UITest {
             Thread.sleep(10000)
             remoteRobot.welcomeFrame {
                 openButton.click()
-            }
-            remoteRobot.dialog("Open File or Project") {
-                val pathField = textField(byXpath("//div[@class='BorderlessTextField']"))
-                pathField.click()
-                Thread.sleep(500)
-                pathField.runJs("component.setText('${demo.toString().replace("'", "\\'")}')")
-                Thread.sleep(500)
-                button("OK").click()
+                dialog("Open File or Project") {
+                    val pathField = textField(byXpath("//div[@class='BorderlessTextField']"))
+                    pathField.click()
+                    Thread.sleep(500)
+                    pathField.runJs("component.setText('${demo.toString().replace("'", "\\'")}')")
+                    Thread.sleep(500)
+                    button("OK").click()
+                }
             }
             Thread.sleep(5000)
             remoteRobot.find<IdeaFrame>(timeout = ofMinutes(2)).apply {

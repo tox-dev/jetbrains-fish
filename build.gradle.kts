@@ -185,6 +185,9 @@ tasks {
 }
 
 val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
+    type = org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity
+    version = providers.gradleProperty("platformVersion")
+
     task {
         jvmArgumentProviders +=
             CommandLineArgumentProvider {
