@@ -36,19 +36,12 @@ class FishFoldingBuilder : FoldingBuilderEx() {
             if (range.length > 20) {
                 val placeholderText =
                     when (element) {
-                        is FishFunctionBlock -> {
-                            val name = element.functionName?.text ?: "..."
-                            "function $name..."
-                        }
+                        is FishFunctionBlock -> "function ${element.functionName?.text ?: "..."}..."
                         is FishIfBlock -> "if..."
                         is FishWhileBlock -> "while..."
-                        is FishForBlock -> {
-                            val variable = element.loopVariable?.text ?: "..."
-                            "for $variable..."
-                        }
+                        is FishForBlock -> "for ${element.loopVariable?.text ?: "..."}..."
                         is FishSwitchBlock -> "switch..."
-                        is FishBeginBlock -> "begin..."
-                        else -> "..."
+                        else -> "begin..."
                     }
                 descriptors.add(FoldingDescriptor(element.node, range, null, placeholderText))
             }

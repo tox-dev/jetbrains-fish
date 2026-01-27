@@ -1,0 +1,115 @@
+<templateSet group="Fish">
+    <template name="fun" value="function $NAME$&#10;    $END$&#10;end" description="Function definition" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="funa" value="function $NAME$ --argument-names $ARGS$&#10;    $END$&#10;end" description="Function with arguments" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true"/>
+        <variable name="ARGS" expression="" defaultValue="&quot;arg1 arg2&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="if" value="if $CONDITION$&#10;    $END$&#10;end" description="If statement" toReformat="false" toShortenFQNames="false">
+        <variable name="CONDITION" expression="" defaultValue="&quot;test&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="ife" value="if $CONDITION$&#10;    $THEN$&#10;else&#10;    $END$&#10;end" description="If-else statement" toReformat="false" toShortenFQNames="false">
+        <variable name="CONDITION" expression="" defaultValue="&quot;test&quot;" alwaysStopAt="true"/>
+        <variable name="THEN" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="for" value="for $VAR$ in $LIST$&#10;    $END$&#10;end" description="For loop" toReformat="false" toShortenFQNames="false">
+        <variable name="VAR" expression="" defaultValue="&quot;item&quot;" alwaysStopAt="true"/>
+        <variable name="LIST" expression="" defaultValue="&quot;$items&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="while" value="while $CONDITION$&#10;    $END$&#10;end" description="While loop" toReformat="false" toShortenFQNames="false">
+        <variable name="CONDITION" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="switch" value="switch $VALUE$&#10;    case $PATTERN$&#10;        $END$&#10;end" description="Switch statement" toReformat="false" toShortenFQNames="false">
+        <variable name="VALUE" expression="" defaultValue="&quot;$var&quot;" alwaysStopAt="true"/>
+        <variable name="PATTERN" expression="" defaultValue="&quot;pattern&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="begin" value="begin&#10;    $END$&#10;end" description="Begin block" toReformat="false" toShortenFQNames="false">
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="set" value="set -l $NAME$ $VALUE$" description="Set local variable" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;var&quot;" alwaysStopAt="true"/>
+        <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="setg" value="set -gx $NAME$ $VALUE$" description="Set global exported variable" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;VAR&quot;" alwaysStopAt="true"/>
+        <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="argparse" value="argparse h/help $FLAGS$ -- $$argv&#10;or return&#10;&#10;if set -q _flag_help&#10;    echo &quot;Usage: $NAME$ [options]&quot;&#10;    return 0&#10;end&#10;$END$" description="Argument parsing boilerplate" toReformat="false" toShortenFQNames="false">
+        <variable name="FLAGS" expression="" defaultValue="&quot;v/verbose&quot;" alwaysStopAt="true"/>
+        <variable name="NAME" expression="" defaultValue="&quot;command&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="complete" value="complete -c $COMMAND$ -s $SHORT$ -l $LONG$ -d '$DESCRIPTION$'" description="Completion definition" toReformat="false" toShortenFQNames="false">
+        <variable name="COMMAND" expression="" defaultValue="&quot;mycommand&quot;" alwaysStopAt="true"/>
+        <variable name="SHORT" expression="" defaultValue="&quot;h&quot;" alwaysStopAt="true"/>
+        <variable name="LONG" expression="" defaultValue="&quot;help&quot;" alwaysStopAt="true"/>
+        <variable name="DESCRIPTION" expression="" defaultValue="&quot;Show help&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="abbr" value="abbr -a $NAME$ '$EXPANSION$'" description="Add abbreviation" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true"/>
+        <variable name="EXPANSION" expression="" defaultValue="&quot;expansion&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="status" value="if not status is-interactive&#10;    return&#10;end&#10;$END$" description="Interactive check guard" toReformat="false" toShortenFQNames="false">
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+
+    <template name="test" value="if test $CONDITION$&#10;    $END$&#10;end" description="Test condition" toReformat="false" toShortenFQNames="false">
+        <variable name="CONDITION" expression="" defaultValue="&quot;-f file&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="Fish" value="true"/>
+        </context>
+    </template>
+</templateSet>

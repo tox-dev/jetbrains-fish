@@ -1,5 +1,7 @@
 package com.github.toxdev.fish.run
 
+import com.intellij.openapi.project.Project
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -46,5 +48,16 @@ class FishRunConfigurationTypeTest {
         val factory = configurationType.configurationFactories.first()
 
         assertEquals("Fish Script", factory.name)
+    }
+
+    @Test
+    fun `factory createTemplateConfiguration returns FishRunConfiguration`() {
+        val factory = configurationType.configurationFactories.first() as FishConfigurationFactory
+        val project = mockk<Project>(relaxed = true)
+
+        val config = factory.createTemplateConfiguration(project)
+
+        assertNotNull(config)
+        assertEquals("Fish Script", config.name)
     }
 }

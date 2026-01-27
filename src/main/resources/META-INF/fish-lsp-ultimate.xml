@@ -1,0 +1,7 @@
+<idea-plugin>
+    <!-- JetBrains Native LSP Support (Ultimate/Commercial IDEs) -->
+    <extensions defaultExtensionNs="com.intellij.platform.lsp">
+        <serverSupportProvider
+            implementation="com.github.toxdev.fish.lsp.FishLspServerSupportProvider"/>
+    </extensions>
+</idea-plugin>

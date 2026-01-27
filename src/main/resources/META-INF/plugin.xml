@@ -19,12 +19,14 @@
         <li>Customizable color schemes</li>
     </ul>
 
-    <h3>Code Intelligence</h3>
+    <h3>Code Intelligence (via fish-lsp)</h3>
     <ul>
-        <li>Code completion for keywords, builtins, and functions</li>
-        <li>Go to definition for functions</li>
-        <li>Find usages for functions</li>
-        <li>Quick documentation for builtins, keywords, and operators</li>
+        <li>Code completion with context-aware suggestions</li>
+        <li>Go to definition for functions and variables</li>
+        <li>Find references across workspace</li>
+        <li>Hover documentation</li>
+        <li>Diagnostics and code actions</li>
+        <li>Rename refactoring</li>
     </ul>
 
     <h3>Navigation & Structure</h3>
@@ -38,28 +40,40 @@
     <h3>Editing Support</h3>
     <ul>
         <li>Comment/uncomment with Ctrl+/</li>
-        <li>Code formatting via fish_indent</li>
+        <li>Code formatting via fish-lsp</li>
         <li>Run configurations to execute scripts</li>
         <li>Run gutter icon for quick script execution</li>
     </ul>
 
-    <h3>Code Quality</h3>
-    <ul>
-        <li>Deprecated syntax inspection</li>
-        <li>Unused variable inspection</li>
-    </ul>
+    <h3>Requirements</h3>
+    <p>For code intelligence features, install <a href="https://github.com/ndonfris/fish-lsp#installation">fish-lsp</a>.</p>
+    <p>Community Edition users need the <a href="https://plugins.jetbrains.com/plugin/23257-lsp4ij">LSP4IJ plugin</a>.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends optional="true" config-file="fish-lsp-ultimate.xml">com.intellij.modules.ultimate</depends>
+    <depends optional="true" config-file="fish-lsp4ij.xml">com.redhat.devtools.lsp4ij</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Notification Group -->
+        <notificationGroup id="Fish LSP"
+                           displayType="BALLOON"/>
+
+        <!-- Settings Page -->
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.github.toxdev.fish.lsp.FishLspConfigurable"
+            id="com.github.toxdev.fish.lsp.FishLspConfigurable"
+            displayName="Fish Shell"/>
+
         <!-- File Type -->
         <fileType
             name="Fish"
             language="Fish"
             implementationClass="com.github.toxdev.fish.FishFileType"
             fieldName="INSTANCE"
-            extensions="fish"/>
+            extensions="fish"
+            hashBangs="fish"/>
 
         <!-- Parser -->
         <lang.parserDefinition
@@ -99,44 +113,6 @@
         <breadcrumbsInfoProvider
             implementation="com.github.toxdev.fish.FishBreadcrumbsProvider"/>
 
-        <!-- Code Completion -->
-        <completion.contributor
-            language="Fish"
-            implementationClass="com.github.toxdev.fish.completion.FishCompletionContributor"/>
-
-        <!-- Go to Definition -->
-        <psi.referenceContributor
-            language="Fish"
-            implementation="com.github.toxdev.fish.reference.FishReferenceContributor"/>
-
-        <!-- Find Usages -->
-        <lang.findUsagesProvider
-            language="Fish"
-            implementationClass="com.github.toxdev.fish.findUsages.FishFindUsagesProvider"/>
-
-        <!-- External Formatter (fish_indent) -->
-        <formattingService
-            implementation="com.github.toxdev.fish.formatting.FishExternalFormatter"/>
-
-        <!-- Inspections -->
-        <localInspection
-            language="Fish"
-            shortName="FishDeprecatedSyntax"
-            displayName="Deprecated Fish syntax"
-            groupName="Fish"
-            enabledByDefault="true"
-            level="WARNING"
-            implementationClass="com.github.toxdev.fish.inspection.FishDeprecatedSyntaxInspection"/>
-
-        <localInspection
-            language="Fish"
-            shortName="FishUnusedVariable"
-            displayName="Unused local variable"
-            groupName="Fish"
-            enabledByDefault="true"
-            level="WARNING"
-            implementationClass="com.github.toxdev.fish.inspection.FishUnusedVariableInspection"/>
-
         <!-- Run Configuration -->
         <configurationType
             implementation="com.github.toxdev.fish.run.FishRunConfigurationType"/>
@@ -146,9 +122,15 @@
             language="Fish"
             implementationClass="com.github.toxdev.fish.run.FishRunLineMarkerProvider"/>
 
-        <!-- Documentation -->
-        <lang.documentationProvider
+        <!-- Live Templates -->
+        <liveTemplateContext
+            contextId="Fish"
+            implementation="com.github.toxdev.fish.FishLiveTemplateContext"/>
+        <defaultLiveTemplates file="/liveTemplates/Fish.xml"/>
+
+        <!-- Color Preview -->
+        <codeInsight.lineMarkerProvider
             language="Fish"
-            implementationClass="com.github.toxdev.fish.documentation.FishDocumentationProvider"/>
+            implementationClass="com.github.toxdev.fish.FishColorPreviewProvider"/>
     </extensions>
 </idea-plugin>
