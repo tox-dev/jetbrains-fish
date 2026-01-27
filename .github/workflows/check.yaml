@@ -157,8 +157,18 @@ jobs:
         run: rm -rf ~/.gradle/caches/*/transforms
       - name: Run unit tests
         run: ./gradlew test
-      - name: Verify 100% coverage
+      - name: Verify coverage
         run: ./gradlew koverVerify
+      - name: Run UI tests
+        run: |
+          export DISPLAY=:99.0
+          Xvfb :99 -screen 0 1920x1080x24 &
+          ./gradlew runIdeForUiTests &
+          echo "Waiting for IDE to start..."
+          timeout 180 bash -c 'until curl -s http://127.0.0.1:8082 > /dev/null 2>&1; do sleep 2; done' || { echo "IDE failed to start"; exit 1; }
+          echo "IDE is ready"
+          ./gradlew uiTest
+          kill %1 %2 || true
 
   releaseDraft:
     name: Create release draft

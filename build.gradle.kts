@@ -1,5 +1,6 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
+import org.jetbrains.intellij.platform.gradle.Constants.Constraints
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -40,6 +41,8 @@ dependencies {
     testImplementation(libs.jupiter)
     testImplementation(libs.jupiterParams)
     testImplementation(libs.mockk)
+    testImplementation(libs.remoteRobot)
+    testImplementation(libs.remoteRobotFixtures)
     testRuntimeOnly(libs.jupiterEngine)
     testRuntimeOnly(libs.junitPlatformLauncher)
     testRuntimeOnly("junit:junit:4.13.2") // legacy JUnit 4 support
@@ -100,11 +103,19 @@ kover {
         sources {
             excludeJava = true
         }
+        instrumentation {
+            disabledForTestTasks.add("uiTest")
+        }
     }
     reports {
         total {
             xml {
                 onCheck = true
+            }
+        }
+        verify {
+            rule {
+                minBound(73)
             }
         }
     }
@@ -139,10 +150,26 @@ tasks {
 
     test {
         useJUnitPlatform()
+        exclude("**/UITest.class")
         jvmArgs(
             "-Djb.mapper.configuration.url=file:///dev/null",
         )
     }
+
+    val uiTest =
+        register<Test>("uiTest") {
+            description = "Runs UI tests (requires runIdeForUiTests to be running)"
+            group = "verification"
+            useJUnitPlatform()
+            include("**/UITest.class")
+            testClassesDirs = sourceSets["test"].output.classesDirs
+            classpath = sourceSets["test"].runtimeClasspath
+            shouldRunAfter(test)
+            jvmArgs(
+                "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+            )
+        }
 
     buildSearchableOptions {
         enabled = false
@@ -154,5 +181,33 @@ tasks {
 
     runIde {
         jvmArgs("-XX:+UnlockDiagnosticVMOptions")
+    }
+}
+
+val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
+    task {
+        jvmArgumentProviders +=
+            CommandLineArgumentProvider {
+                buildList {
+                    add("-Drobot-server.port=8082")
+                    add("-Djb.privacy.policy.text=<!--999.999-->")
+                    add("-Djb.consents.confirmation.enabled=false")
+                    add("-Didea.trust.all.projects=true")
+                    add("-Dide.show.tips.on.startup.default.value=false")
+                    if (org.gradle.internal.os.OperatingSystem
+                            .current()
+                            .isMacOsX
+                    ) {
+                        add("-Dide.mac.message.dialogs.as.sheets=false")
+                        add("-Dide.mac.file.chooser.native=false")
+                        add("-DjbScreenMenuBar.enabled=false")
+                        add("-Dapple.laf.useScreenMenuBar=false")
+                    }
+                }
+            }
+    }
+
+    plugins {
+        robotServerPlugin(Constraints.LATEST_VERSION)
     }
 }

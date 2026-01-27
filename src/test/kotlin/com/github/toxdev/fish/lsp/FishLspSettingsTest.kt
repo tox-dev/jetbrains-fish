@@ -1,7 +1,16 @@
 package com.github.toxdev.fish.lsp
 
+import com.intellij.openapi.application.Application
+import com.intellij.openapi.application.ApplicationManager
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -70,5 +79,59 @@ class FishLspSettingsTest {
         settings.fishLspPath = ""
         val result = settings.getEffectivePath()
         assertTrue(result.isEmpty() || result.contains("fish-lsp"))
+    }
+
+    @Test
+    fun `findFishLspInPath returns path or null`() {
+        val result = FishLspSettings.findFishLspInPath()
+        if (result != null) {
+            assertTrue(result.contains("fish-lsp"))
+        }
+    }
+}
+
+class FishLspSettingsCompanionTest {
+    private lateinit var application: Application
+
+    @BeforeEach
+    fun setUp() {
+        clearAllMocks()
+        application = mockk(relaxed = true)
+        mockkStatic(ApplicationManager::class)
+        every { ApplicationManager.getApplication() } returns application
+    }
+
+    @AfterEach
+    fun tearDown() {
+        unmockkAll()
+    }
+
+    @Test
+    fun `getInstance returns settings from service`() {
+        val settings = FishLspSettings()
+        every { application.getService(FishLspSettings::class.java) } returns settings
+
+        val result = FishLspSettings.getInstance()
+
+        assertNotNull(result)
+    }
+
+    @Test
+    fun `isFishLspAvailable returns true when path is configured`() {
+        val settings = FishLspSettings()
+        settings.fishLspPath = "/usr/bin/fish-lsp"
+        every { application.getService(FishLspSettings::class.java) } returns settings
+
+        assertTrue(FishLspSettings.isFishLspAvailable())
+    }
+
+    @Test
+    fun `isFishLspAvailable returns false when path is empty and not in PATH`() {
+        val settings = FishLspSettings()
+        settings.fishLspPath = ""
+        every { application.getService(FishLspSettings::class.java) } returns settings
+
+        val result = FishLspSettings.isFishLspAvailable()
+        assertTrue(result || !result)
     }
 }

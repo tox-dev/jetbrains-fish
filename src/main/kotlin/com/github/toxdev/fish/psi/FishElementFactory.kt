@@ -11,10 +11,13 @@ object FishElementFactory {
         name: String,
     ): PsiElement {
         val file = createFile(project, "function $name\nend")
-        val types = FishTypes::class.java
-        val functionDeclarationType = types.getDeclaredField("FUNCTION_DECLARATION").get(null) as com.intellij.psi.tree.IElementType
-        val functionDeclaration = file.node.findChildByType(functionDeclarationType)?.psi
-        return functionDeclaration?.firstChild ?: throw IllegalStateException("Failed to create function name")
+        val functionBlock =
+            file.node
+                .findChildByType(FishTypes.CHAINED_STATEMENT)
+                ?.findChildByType(FishTypes.FUNCTION_BLOCK)
+                ?.psi as? FishFunctionBlock
+        return functionBlock?.functionName?.nameIdentifier
+            ?: throw IllegalStateException("Failed to create function name")
     }
 
     private fun createFile(

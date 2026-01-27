@@ -13,18 +13,16 @@ import javax.swing.Icon
 class FishColorPreviewProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element.node.elementType.toString() != "WORD") return null
+        if (element.text != "set_color") return null
 
-        val text = element.text
-        if (text != "set_color") return null
-
-        val nextSibling = findColorArgument(element) ?: return null
-        val color = parseColor(nextSibling) ?: return null
+        val colorName = findColorArgument(element) ?: return null
+        val color = parseColor(colorName) ?: return null
 
         return LineMarkerInfo(
             element,
             element.textRange,
             createColorIcon(color),
-            { "Color: $nextSibling" },
+            { "Color: $colorName" },
             null,
             GutterIconRenderer.Alignment.LEFT,
             { "Color preview" },
@@ -46,30 +44,8 @@ class FishColorPreviewProvider : LineMarkerProvider {
         return null
     }
 
-    private fun parseColor(colorName: String): Color? = FISH_COLORS[colorName.lowercase()] ?: parseHexColor(colorName)
-
-    private fun parseHexColor(hex: String): Color? {
-        val cleaned = hex.removePrefix("#")
-        return try {
-            when (cleaned.length) {
-                3 -> {
-                    val r = cleaned[0].toString().repeat(2).toInt(16)
-                    val g = cleaned[1].toString().repeat(2).toInt(16)
-                    val b = cleaned[2].toString().repeat(2).toInt(16)
-                    Color(r, g, b)
-                }
-                6 -> ColorUtil.fromHex(cleaned)
-                else -> null
-            }
-        } catch (_: NumberFormatException) {
-            null
-        }
-    }
-
-    private fun createColorIcon(color: Color): Icon = ColorIcon(12, color, true)
-
     companion object {
-        private val FISH_COLORS =
+        internal val FISH_COLORS =
             mapOf(
                 "black" to JBColor.BLACK,
                 "red" to Color(205, 0, 0),
@@ -89,5 +65,29 @@ class FishColorPreviewProvider : LineMarkerProvider {
                 "brwhite" to JBColor.WHITE,
                 "normal" to Color(192, 192, 192),
             )
+
+        internal fun parseColor(colorName: String): Color? = FISH_COLORS[colorName.lowercase()] ?: parseHexColor(colorName)
+
+        internal fun parseHexColor(hex: String): Color? {
+            val cleaned = hex.removePrefix("#")
+            return try {
+                when (cleaned.length) {
+                    3 -> {
+                        val r = cleaned[0].toString().repeat(2).toInt(16)
+                        val g = cleaned[1].toString().repeat(2).toInt(16)
+                        val b = cleaned[2].toString().repeat(2).toInt(16)
+                        Color(r, g, b)
+                    }
+                    6 -> ColorUtil.fromHex(cleaned)
+                    else -> null
+                }
+            } catch (_: NumberFormatException) {
+                null
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+        }
+
+        internal fun createColorIcon(color: Color): Icon = ColorIcon(12, color, true)
     }
 }
