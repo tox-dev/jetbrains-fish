@@ -18,12 +18,21 @@ redirections (`>`, `>>`, `<`, `2>`, `&>`), and command substitution syntax are a
 
 You can customize colors via **Settings → Editor → Color Scheme → Fish**.
 
-### Code Intelligence
+### Code Intelligence (via fish-lsp)
 
-The plugin offers code completion for keywords, builtins, and user-defined functions. You can navigate to function
-definitions with Ctrl+Click using the go to definition feature. The find usages feature allows you to find all
-references to a function. Quick documentation is available on hover for builtins, keywords, operators, and variables,
-including detailed documentation for subcommands of `string`, `status`, `path`, and `history`.
+When [fish-lsp](https://github.com/ndonfris/fish-lsp) is installed, the plugin provides advanced code intelligence:
+
+- Context-aware code completion for functions, variables, commands, and arguments.
+- Go to definition for functions and variables with Ctrl+Click.
+- Find all usages of a function or variable across your workspace.
+- Hover documentation for builtins, functions, and variables.
+- Real-time diagnostics for error detection and warnings.
+- Code actions with quick fixes and refactoring suggestions.
+- Safe rename refactoring across files.
+- Code formatting via fish-lsp.
+
+Without fish-lsp, the plugin still provides basic code completion for keywords and builtins, plus quick documentation
+for Fish language elements.
 
 ### Navigation and Structure
 
@@ -33,9 +42,10 @@ matching parentheses, braces, and brackets.
 
 ### Editing Support
 
-You can toggle comments with `Ctrl+/` or `Cmd+/`. Code formatting is available via `fish_indent` when it is installed on
-your system. Run configurations allow you to execute Fish scripts directly from the IDE. A run gutter icon appears next
-to scripts for quick execution.
+You can toggle comments with `Ctrl+/` or `Cmd+/`. Code formatting is available via fish-lsp when installed. Run
+configurations allow you to execute Fish scripts directly from the IDE. A run gutter icon appears next to scripts for
+quick execution. Live templates provide snippets for common Fish constructs like functions, loops, and conditionals.
+Color preview shows inline color swatches for `set_color` commands.
 
 ### Code Quality
 
@@ -55,8 +65,19 @@ open **Settings → Plugins → ⚙️ → Install Plugin from Disk...** and sel
 
 ## Requirements
 
-The plugin requires IntelliJ IDEA 2024.3 or later, or any compatible JetBrains IDE. For code formatting, `fish_indent`
-must be available in your system PATH.
+The plugin requires IntelliJ IDEA 2024.3 or later, or any compatible JetBrains IDE.
+
+### fish-lsp (Recommended)
+
+For full code intelligence features, install [fish-lsp](https://github.com/ndonfris/fish-lsp#installation). The plugin
+will automatically detect fish-lsp if it's in your PATH, or you can configure the path manually in **Settings → Tools →
+Fish Shell**.
+
+### LSP4IJ Plugin (Community Edition)
+
+If you're using a Community Edition IDE (IntelliJ IDEA Community, PyCharm Community, etc.), you need to install the
+[LSP4IJ plugin](https://plugins.jetbrains.com/plugin/23257-lsp4ij) for LSP support. Ultimate editions have built-in LSP
+support.
 
 ## File Association
 
@@ -69,9 +90,10 @@ as `#!/usr/bin/env fish` or `#!/usr/bin/fish`.
 
 You can customize syntax highlighting colors at **Settings → Editor → Color Scheme → Fish**.
 
-### External Formatter
+### fish-lsp Settings
 
-The plugin uses `fish_indent` for code formatting. Ensure Fish is installed and `fish_indent` is available in your PATH.
+Configure fish-lsp at **Settings → Tools → Fish Shell**. You can specify a custom path to the fish-lsp executable if
+it's not in your PATH, or toggle LSP features on/off.
 
 ## Known Limitations
 
