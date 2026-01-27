@@ -72,7 +72,8 @@
             language="Fish"
             implementationClass="com.github.toxdev.fish.FishFileType"
             fieldName="INSTANCE"
-            extensions="fish"/>
+            extensions="fish"
+            hashBangs="fish"/>
 
         <!-- Parser -->
         <lang.parserDefinition
@@ -120,5 +121,16 @@
         <runLineMarkerContributor
             language="Fish"
             implementationClass="com.github.toxdev.fish.run.FishRunLineMarkerProvider"/>
+
+        <!-- Live Templates -->
+        <liveTemplateContext
+            contextId="Fish"
+            implementation="com.github.toxdev.fish.FishLiveTemplateContext"/>
+        <defaultLiveTemplates file="/liveTemplates/Fish.xml"/>
+
+        <!-- Color Preview -->
+        <codeInsight.lineMarkerProvider
+            language="Fish"
+            implementationClass="com.github.toxdev.fish.FishColorPreviewProvider"/>
     </extensions>
 </idea-plugin>
