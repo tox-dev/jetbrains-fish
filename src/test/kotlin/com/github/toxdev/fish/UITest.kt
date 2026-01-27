@@ -48,6 +48,7 @@ class UITest {
 
         @BeforeAll
         @JvmStatic
+        @Timeout(value = 5, unit = TimeUnit.MINUTES)
         fun startIdea() {
             val base = Path.of(System.getProperty("user.home"), "projects")
             Files.createDirectories(base)
