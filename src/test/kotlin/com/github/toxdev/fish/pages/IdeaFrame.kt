@@ -22,7 +22,7 @@ class IdeaFrame(
     val projectViewTree
         get() =
             find<ContainerFixture>(
-                byXpath("ProjectViewTree", "//div[@class='ProjectViewTree']"),
+                byXpath("ProjectViewTree", "//div[contains(@class, 'ProjectViewTree')]"),
                 Duration.ofSeconds(30),
             )
 
