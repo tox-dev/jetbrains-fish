@@ -77,6 +77,8 @@ jobs:
           large-packages: false
           android: true
           dotnet: true
+          haskell: true
+          docker-images: true
       - name: Checkout git repository
         uses: actions/checkout@v6
       - name: Set up Java
