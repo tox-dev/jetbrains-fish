@@ -107,7 +107,15 @@ intellijPlatform {
     }
     pluginVerification {
         ides {
-            recommended()
+            val verifyIde = providers.gradleProperty("verifyIde").orNull
+            if (verifyIde != null) {
+                val ideType =
+                    org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+                        .fromCode(verifyIde)
+                ide(ideType, providers.gradleProperty("platformVersion").get())
+            } else {
+                recommended()
+            }
         }
     }
 }
