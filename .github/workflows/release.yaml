@@ -1,10 +1,11 @@
-# Running the following secrets to be provided: PUBLISH_TOKEN, PRIVATE_KEY, PRIVATE_KEY_PASSWORD, CERTIFICATE_CHAIN.
+# Secrets required: PUBLISH_TOKEN, PRIVATE_KEY, PRIVATE_KEY_PASSWORD, CERTIFICATE_CHAIN.
 name: Release
 on:
   release:
-    types: [prereleased, released]
+    types: [released]
+
 jobs:
-  release:
+  publish:
     name: Publish Plugin
     runs-on: ubuntu-latest
     permissions:
@@ -30,57 +31,67 @@ jobs:
           java-version: 21
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
-      - name: Extract plugin properties
-        id: properties
-        shell: bash
+      - name: Set version from tag
+        id: version
         run: |
-          CHANGELOG="$(cat << 'EOM' | sed -e 's/^[[:space:]]*$//g' -e '/./,$!d'
-          ${{ github.event.release.body }}
-          EOM
-          )"
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Extract version from tag (remove 'v' prefix if present)
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Update gradle.properties with version from tag
+          sed -i "s/^pluginVersion=.*/pluginVersion=$VERSION/" gradle.properties
+          echo "Set version to $VERSION"
       - name: Update changelog
-        if: ${{ steps.properties.outputs.changelog != '' }}
+        if: ${{ github.event.release.body != '' }}
         env:
-          CHANGELOG: ${{ steps.properties.outputs.changelog }}
-        run: |
-          ./gradlew patchChangelog --release-note="$CHANGELOG"
-      - name: Publish to Jetbrains Marketplace
+          CHANGELOG: ${{ github.event.release.body }}
+        run: ./gradlew patchChangelog --release-note="$CHANGELOG"
+      - name: Publish to JetBrains Marketplace
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
           CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: ./gradlew publishPlugin
-      - name: Upload published plugin as release artifact
+      - name: Upload plugin as release artifact
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
-      - name: Create pull request with the release
-        if: ${{ steps.properties.outputs.changelog != '' }}
+      - name: Calculate next dev version
+        id: next
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))-dev"
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          echo "Next dev version: $NEXT_VERSION"
+      - name: Create PR with next dev version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ github.event.release.tag_name }}"
-          BRANCH="changelog-update-$VERSION"
-          LABEL="release changelog"
+          NEXT_VERSION="${{ steps.next.outputs.next_version }}"
+          BRANCH="post-release-$VERSION"
 
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
 
-          git checkout -b $BRANCH
-          git commit -am "Changelog update - $VERSION"
+          # Checkout main to create PR against it
+          git fetch origin main
+          git checkout -b $BRANCH origin/main
+
+          # Update to next dev version
+          sed -i "s/^pluginVersion=.*/pluginVersion=$NEXT_VERSION/" gradle.properties
+
+          # Copy changelog updates if any
+          git checkout ${{ github.event.release.tag_name }} -- CHANGELOG.md 2>/dev/null || true
+
+          git add gradle.properties CHANGELOG.md
+          git commit -m "Bump version to $NEXT_VERSION after $VERSION release" || echo "No changes"
           git push --set-upstream origin $BRANCH
 
-          gh label create "$LABEL" \
-            --description "Pull requests with release changelog update" \
-            --force \
-            || true
-
           gh pr create \
-            --title "Changelog update - \`$VERSION\`" \
-            --body "Current pull request contains patched \`CHANGELOG.md\` file for the \`$VERSION\` version." \
-            --label "$LABEL" \
+            --title "Bump version to \`$NEXT_VERSION\`" \
+            --body "Post-release version bump after $VERSION release." \
             --head $BRANCH
