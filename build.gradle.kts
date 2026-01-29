@@ -120,6 +120,11 @@ kover {
             xml {
                 onCheck = true
             }
+            filters {
+                excludes {
+                    classes("com.github.toxdev.fish.run.FishRunFileAction")
+                }
+            }
         }
         verify {
             rule {

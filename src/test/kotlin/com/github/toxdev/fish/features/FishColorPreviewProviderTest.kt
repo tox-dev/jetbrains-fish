@@ -213,12 +213,14 @@ class FishColorPreviewProviderPlatformTest {
             }
 
         com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction {
-            file.node.getChildren(null).forEach { node ->
-                if (node.elementType.toString() == "WORD" && node.text != "set_color") {
+            fun checkNodes(node: com.intellij.lang.ASTNode) {
+                if (node.elementType.toString() == "FishTokenType.WORD" && node.text != "set_color") {
                     val info = provider.getLineMarkerInfo(node.psi)
-                    assertNull(info)
+                    assertNull(info, "Expected null for non-set_color WORD '${node.text}'")
                 }
+                node.getChildren(null).forEach { checkNodes(it) }
             }
+            checkNodes(file.node)
         }
     }
 
@@ -232,13 +234,14 @@ class FishColorPreviewProviderPlatformTest {
             }
 
         com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction {
-            com.intellij.psi.util.PsiTreeUtil.processElements(file) { element ->
-                if (element.text == "set_color") {
-                    val info = provider.getLineMarkerInfo(element)
-                    assertNull(info)
+            fun checkNodes(node: com.intellij.lang.ASTNode) {
+                if (node.elementType.toString() == "FishTokenType.WORD" && node.text == "set_color") {
+                    val info = provider.getLineMarkerInfo(node.psi)
+                    assertNull(info, "Expected null for set_color with invalid color")
                 }
-                true
+                node.getChildren(null).forEach { checkNodes(it) }
             }
+            checkNodes(file.node)
         }
     }
 
@@ -252,13 +255,101 @@ class FishColorPreviewProviderPlatformTest {
             }
 
         com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction {
-            com.intellij.psi.util.PsiTreeUtil.processElements(file) { element ->
-                if (element.text == "set_color") {
-                    val info = provider.getLineMarkerInfo(element)
-                    assertNull(info)
+            fun checkNodes(node: com.intellij.lang.ASTNode) {
+                if (node.elementType.toString() == "FishTokenType.WORD" && node.text == "set_color") {
+                    val info = provider.getLineMarkerInfo(node.psi)
+                    assertNull(info, "Expected null when no color argument follows set_color")
                 }
-                true
+                node.getChildren(null).forEach { checkNodes(it) }
             }
+            checkNodes(file.node)
+        }
+    }
+
+    @Test
+    fun `getLineMarkerInfo returns marker for set_color with named color`() {
+        val provider = FishColorPreviewProvider()
+        val content = "set_color red"
+        val file =
+            com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction<com.github.toxdev.fish.psi.FishFile> {
+                createPsiFile(content)
+            }
+
+        com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction {
+            val nodes = mutableListOf<String>()
+
+            fun collectNodes(node: com.intellij.lang.ASTNode) {
+                nodes.add("'${node.text}' -> ${node.elementType}")
+                node.getChildren(null).forEach { collectNodes(it) }
+            }
+            collectNodes(file.node)
+
+            var found = false
+
+            fun findSetColor(node: com.intellij.lang.ASTNode) {
+                if (node.text == "set_color" && node.elementType.toString() == "FishTokenType.WORD") {
+                    val info = provider.getLineMarkerInfo(node.psi)
+                    assertNotNull(info, "Expected LineMarkerInfo, type was ${node.elementType}")
+                    found = true
+                }
+                node.getChildren(null).forEach { findSetColor(it) }
+            }
+            findSetColor(file.node)
+
+            org.junit.jupiter.api.Assertions
+                .assertTrue(found, "set_color WORD not found. All nodes: ${nodes.joinToString("; ")}")
+        }
+    }
+
+    @Test
+    fun `getLineMarkerInfo returns marker for set_color with hex color`() {
+        val provider = FishColorPreviewProvider()
+        val content = "set_color ff0000"
+        val file =
+            com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction<com.github.toxdev.fish.psi.FishFile> {
+                createPsiFile(content)
+            }
+
+        com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction {
+            var found = false
+
+            fun findSetColor(node: com.intellij.lang.ASTNode) {
+                if (node.text == "set_color" && node.elementType.toString() == "FishTokenType.WORD") {
+                    val info = provider.getLineMarkerInfo(node.psi)
+                    assertNotNull(info, "Expected LineMarkerInfo for 'set_color ff0000'")
+                    found = true
+                }
+                node.getChildren(null).forEach { findSetColor(it) }
+            }
+            findSetColor(file.node)
+            org.junit.jupiter.api.Assertions
+                .assertTrue(found, "set_color WORD token not found")
+        }
+    }
+
+    @Test
+    fun `getLineMarkerInfo returns marker for set_color with flag before color`() {
+        val provider = FishColorPreviewProvider()
+        val content = "set_color --bold cyan"
+        val file =
+            com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction<com.github.toxdev.fish.psi.FishFile> {
+                createPsiFile(content)
+            }
+
+        com.intellij.openapi.application.ApplicationManager.getApplication().runReadAction {
+            var found = false
+
+            fun findSetColor(node: com.intellij.lang.ASTNode) {
+                if (node.text == "set_color" && node.elementType.toString() == "FishTokenType.WORD") {
+                    val info = provider.getLineMarkerInfo(node.psi)
+                    assertNotNull(info, "Expected LineMarkerInfo for 'set_color --bold cyan'")
+                    found = true
+                }
+                node.getChildren(null).forEach { findSetColor(it) }
+            }
+            findSetColor(file.node)
+            org.junit.jupiter.api.Assertions
+                .assertTrue(found, "set_color WORD token not found")
         }
     }
 }

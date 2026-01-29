@@ -17,7 +17,7 @@ class FishLspConfigurable : BoundConfigurable("Fish Shell") {
                     textFieldWithBrowseButton(
                         fileChooserDescriptor =
                             FileChooserDescriptorFactory
-                                .createSingleFileDescriptor()
+                                .singleFile()
                                 .withTitle("Select fish-lsp Executable"),
                     ).align(AlignX.FILL)
                         .bindText(settings::fishLspPath)

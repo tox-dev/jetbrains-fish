@@ -41,6 +41,8 @@ class FishRunConfiguration(
             options.fishPath = value
         }
 
+    override fun getOptionsClass(): Class<out FishRunConfigurationOptions> = FishRunConfigurationOptions::class.java
+
     override fun getOptions(): FishRunConfigurationOptions = super.getOptions() as FishRunConfigurationOptions
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = FishRunConfigurationEditor(project)

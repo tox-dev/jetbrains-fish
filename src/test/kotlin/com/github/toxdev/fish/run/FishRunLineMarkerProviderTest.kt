@@ -13,8 +13,20 @@ class FishRunLineMarkerProviderTest {
     private val provider = FishRunLineMarkerProvider()
 
     @Test
+    fun `getInfo returns null for non-leaf element`() {
+        val element = mockk<PsiElement>()
+        val child = mockk<PsiElement>()
+        every { element.firstChild } returns child
+
+        val info = provider.getInfo(element)
+
+        assertNull(info)
+    }
+
+    @Test
     fun `getInfo returns null for element not in fish file`() {
         val element = mockk<PsiElement>()
+        every { element.firstChild } returns null
         every { element.containingFile } returns null
 
         val info = provider.getInfo(element)
@@ -23,15 +35,17 @@ class FishRunLineMarkerProviderTest {
     }
 
     @Test
-    fun `getInfo returns null when element is not first in file`() {
+    fun `getInfo returns null when element is not first leaf in file`() {
         val element = mockk<PsiElement>()
         val file = mockk<com.github.toxdev.fish.psi.FishFile>()
         val firstChild = mockk<PsiElement>()
+        val firstLeaf = mockk<PsiElement>()
 
+        every { element.firstChild } returns null
         every { element.containingFile } returns file
         every { file.firstChild } returns firstChild
-        every { firstChild.text } returns "some text"
-        every { firstChild.nextSibling } returns null
+        every { firstChild.firstChild } returns firstLeaf
+        every { firstLeaf.firstChild } returns null
 
         val info = provider.getInfo(element)
 
@@ -48,6 +62,7 @@ class FishRunLineMarkerProviderTest {
         val element = mockk<PsiElement>()
         val file = mockk<PsiFile>()
 
+        every { element.firstChild } returns null
         every { element.containingFile } returns file
         every { file.firstChild } returns null
 
@@ -61,6 +76,8 @@ class FishRunLineMarkerProviderTest {
         val element = mockk<PsiElement>()
         val file = mockk<com.github.toxdev.fish.psi.FishFile>()
 
+        every { element.firstChild } returns null
+        every { element.text } returns "echo"
         every { element.containingFile } returns file
         every { file.firstChild } returns element
         every { file.virtualFile } returns null
@@ -76,50 +93,14 @@ class FishRunLineMarkerProviderTest {
         val file = mockk<com.github.toxdev.fish.psi.FishFile>()
         val virtualFile = mockk<VirtualFile>()
 
+        every { element.firstChild } returns null
+        every { element.text } returns "echo"
         every { element.containingFile } returns file
         every { file.firstChild } returns element
         every { file.virtualFile } returns virtualFile
         every { virtualFile.extension } returns "txt"
 
         val info = provider.getInfo(element)
-
-        assertNull(info)
-    }
-
-    @Test
-    fun `getInfo returns null when element is not first child and skipWhitespaceAndComments returns null`() {
-        val element = mockk<PsiElement>()
-        val firstChild = mockk<PsiElement>()
-        val file = mockk<com.github.toxdev.fish.psi.FishFile>()
-
-        every { element.containingFile } returns file
-        every { file.firstChild } returns firstChild
-        every { firstChild.text } returns "something"
-        every { firstChild.nextSibling } returns null
-
-        val info = provider.getInfo(element)
-
-        assertNull(info)
-    }
-
-    @Test
-    fun `getInfo returns null when first child text starts with hash`() {
-        val firstChild = mockk<PsiElement>()
-        val secondChild = mockk<PsiElement>()
-        val file = mockk<com.github.toxdev.fish.psi.FishFile>()
-
-        every { firstChild.containingFile } returns file
-        every { firstChild.text } returns "# comment"
-        every { firstChild.nextSibling } returns secondChild
-
-        every { secondChild.containingFile } returns file
-        every { secondChild.text } returns "echo hello"
-        every { secondChild.nextSibling } returns null
-
-        every { file.firstChild } returns firstChild
-        every { file.virtualFile } returns null
-
-        val info = provider.getInfo(firstChild)
 
         assertNull(info)
     }
