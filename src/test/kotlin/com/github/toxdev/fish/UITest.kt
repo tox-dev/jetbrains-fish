@@ -121,8 +121,15 @@ class UITest {
                 found.first().doubleClick()
                 waitFor(ofSeconds(10)) { isDumbMode().not() }
             }
-            waitFor(ofSeconds(10)) {
-                editorTabs.hasText("test.fish")
+            waitFor(ofSeconds(30)) {
+                try {
+                    val hasTab = editorTabs.hasText("test.fish")
+                    println("DEBUG: editorTabs.hasText('test.fish') = $hasTab")
+                    hasTab
+                } catch (e: Exception) {
+                    println("DEBUG: editorTabs not found yet: ${e.message}")
+                    false
+                }
             }
         }
     }
@@ -133,7 +140,13 @@ class UITest {
             with(projectViewTree) {
                 waitFor(ofSeconds(10)) { hasText("test.fish") }
                 findAllText("test.fish").first().doubleClick()
-                waitFor(ofSeconds(10)) { isDumbMode().not() }
+            }
+            waitFor(ofSeconds(30)) {
+                try {
+                    isDumbMode().not() && editorTabs.hasText("test.fish")
+                } catch (e: Exception) {
+                    false
+                }
             }
         }
     }

@@ -1,0 +1,18 @@
+name: Auto-merge
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  auto-merge:
+    name: 🤝 Auto-merge
+    runs-on: ubuntu-latest
+    if: |
+      (github.actor == 'gaborbernat' || github.actor == 'dependabot[bot]' || github.actor == 'pre-commit-ci[bot]')
+      && vars.AUTO_MERGE_ENABLED == 'true'
+    steps:
+      - name: 🔀 Enable auto-merge
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
