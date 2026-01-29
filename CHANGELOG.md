@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-01-29
+
+- Fix CI bugs, improve workflows, and fix flaky UI tests by @gaborbernat in https://github.com/tox-dev/jetbrains-fish/pull/14
+
+**Full Changelog**: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.3...v0.1.4
+
 ## [0.1.1] - 2026-01-29
 
 ### Added
@@ -30,6 +36,7 @@ All notable changes to this project will be documented in this file.
 
 - Basic Fish shell language plugin structure.
 
-[Unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.1...v0.1.4
 [0.1.1]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/tox-dev/jetbrains-fish/commits/v0.1.0
