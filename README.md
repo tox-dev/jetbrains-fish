@@ -1,10 +1,12 @@
 # Fish Shell Plugin for JetBrains IDEs
 
-[![Build](https://github.com/tox-dev/jetbrains-fish/actions/workflows/build.yml/badge.svg)](https://github.com/tox-dev/jetbrains-fish/actions/workflows/build.yml)
-[![Version](https://img.shields.io/jetbrains/plugin/v/com.github.toxdev.fish.svg)](https://plugins.jetbrains.com/plugin/com.github.toxdev.fish)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/com.github.toxdev.fish.svg)](https://plugins.jetbrains.com/plugin/com.github.toxdev.fish)
+[![Build](https://github.com/tox-dev/jetbrains-fish/actions/workflows/check.yaml/badge.svg)](https://github.com/tox-dev/jetbrains-fish/actions/workflows/check.yaml)
+[![Version](https://img.shields.io/jetbrains/plugin/v/29973.svg)](https://plugins.jetbrains.com/plugin/29973-fish-shell)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/29973.svg)](https://plugins.jetbrains.com/plugin/29973-fish-shell)
 
 This plugin provides comprehensive language support for [Fish shell](https://fishshell.com/) scripts in JetBrains IDEs.
+
+[![Install Plugin](https://img.shields.io/badge/Install-JetBrains%20Marketplace-000?style=for-the-badge&logo=jetbrains)](https://plugins.jetbrains.com/plugin/29973-fish-shell)
 
 ## Features
 

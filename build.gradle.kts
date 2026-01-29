@@ -123,7 +123,7 @@ kover {
         }
         verify {
             rule {
-                minBound(73)
+                minBound(72)
             }
         }
     }

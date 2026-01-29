@@ -21,21 +21,22 @@ class FishRunConfigurationEditor(
         scriptPathField.addBrowseFolderListener(
             project,
             FileChooserDescriptorFactory
-                .createSingleFileDescriptor("fish")
+                .singleFile()
+                .withExtensionFilter("fish")
                 .withTitle("Select Fish Script")
                 .withDescription("Select the Fish script to run"),
         )
         workingDirectoryField.addBrowseFolderListener(
             project,
             FileChooserDescriptorFactory
-                .createSingleFolderDescriptor()
+                .singleDir()
                 .withTitle("Select Working Directory")
                 .withDescription("Select the working directory for the script"),
         )
         fishPathField.addBrowseFolderListener(
             project,
             FileChooserDescriptorFactory
-                .createSingleFileDescriptor()
+                .singleFile()
                 .withTitle("Select Fish Executable")
                 .withDescription("Select the Fish shell executable"),
         )

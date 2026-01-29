@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.elementType
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.ColorIcon
@@ -12,10 +13,13 @@ import javax.swing.Icon
 
 class FishColorPreviewProvider : LineMarkerProvider {
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
-        if (element.node.elementType.toString() != "WORD") return null
+        val elementType = element.elementType?.toString() ?: return null
+        if (elementType != "FishTokenType.WORD") return null
         if (element.text != "set_color") return null
 
-        val colorName = findColorArgument(element) ?: return null
+        val parent = element.parent ?: return null
+        val commandText = parent.text
+        val colorName = findColorArgument(commandText) ?: return null
         val color = parseColor(colorName) ?: return null
 
         return LineMarkerInfo(
@@ -29,17 +33,12 @@ class FishColorPreviewProvider : LineMarkerProvider {
         )
     }
 
-    private fun findColorArgument(setColorElement: PsiElement): String? {
-        var sibling = setColorElement.nextSibling
-        while (sibling != null) {
-            val type = sibling.node.elementType.toString()
-            if (type == "WORD" || type == "BARE_WORD") {
-                val text = sibling.text
-                if (!text.startsWith("-")) {
-                    return text
-                }
+    private fun findColorArgument(commandText: String): String? {
+        val parts = commandText.split(Regex("\\s+")).drop(1)
+        for (part in parts) {
+            if (!part.startsWith("-") && part.isNotEmpty()) {
+                return part
             }
-            sibling = sibling.nextSibling
         }
         return null
     }
