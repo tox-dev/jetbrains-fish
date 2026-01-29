@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-01-29
+
 ### Added
 
 - Initial Fish shell language support.
@@ -27,3 +29,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Basic Fish shell language plugin structure.
+
+[Unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/tox-dev/jetbrains-fish/commits/v0.1.0
