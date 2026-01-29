@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-01-29
+
+- Bump version to `0.1.6-dev` by @github-actions[bot] in https://github.com/tox-dev/jetbrains-fish/pull/18
+- Fix auto-merge workflow to use GITHUB_TOKEN by @gaborbernat in https://github.com/tox-dev/jetbrains-fish/pull/19
+
+**Full Changelog**: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.5...v0.1.6
+
 ## [0.1.5] - 2026-01-29
 
 - Bump version to `0.1.5-dev` by @github-actions[bot] in https://github.com/tox-dev/jetbrains-fish/pull/15
 - Fix internal API usage, improve UI tests, add auto-merge by @gaborbernat in https://github.com/tox-dev/jetbrains-fish/pull/17
-
-**Full Changelog**: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.4...v0.1.5
 
 ## [0.1.4] - 2026-01-29
 
@@ -41,7 +46,8 @@ All notable changes to this project will be documented in this file.
 
 - Basic Fish shell language plugin structure.
 
-[Unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.1...v0.1.4
 [0.1.1]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.0...v0.1.1
