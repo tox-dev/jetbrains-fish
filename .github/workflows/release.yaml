@@ -6,7 +6,7 @@ on:
 
 jobs:
   publish:
-    name: Publish Plugin
+    name: 🚀 Publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,58 +15,55 @@ jobs:
       name: release
       url: https://plugins.jetbrains.com/plugin/29973-fish-shell
     steps:
-      - name: Checkout git repository
+      - name: 📥 Checkout
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.release.tag_name }}
-      - name: Maximize Build Space
+      - name: 🧹 Free disk space
         uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: false
           large-packages: false
-      - name: Set up Java
+      - name: ☕ Set up Java
         uses: actions/setup-java@v5
         with:
           distribution: zulu
           java-version: 21
-      - name: Set up Gradle
+      - name: 🐘 Set up Gradle
         uses: gradle/actions/setup-gradle@v5
-      - name: Set version from tag
+      - name: 🏷️ Set version from tag
         id: version
         run: |
-          # Extract version from tag (remove 'v' prefix if present)
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-          # Update gradle.properties with version from tag
           sed -i "s/^pluginVersion=.*/pluginVersion=$VERSION/" gradle.properties
-          echo "Set version to $VERSION"
-      - name: Update changelog
+      - name: 📝 Update changelog
         if: ${{ github.event.release.body != '' }}
-        env:
-          CHANGELOG: ${{ github.event.release.body }}
-        run: ./gradlew patchChangelog --release-note="$CHANGELOG"
-      - name: Publish to JetBrains Marketplace
+        run: |
+          cat > /tmp/release-notes.txt << 'RELEASE_NOTES_EOF'
+          ${{ github.event.release.body }}
+          RELEASE_NOTES_EOF
+          ./gradlew patchChangelog --release-note="$(cat /tmp/release-notes.txt)"
+      - name: 📤 Publish to JetBrains Marketplace
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
           CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: ./gradlew publishPlugin
-      - name: Upload plugin as release artifact
+      - name: 📎 Upload release artifact
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
-      - name: Calculate next dev version
+      - name: 🔢 Calculate next dev version
         id: next
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
           NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))-dev"
           echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-          echo "Next dev version: $NEXT_VERSION"
-      - name: Create PR with next dev version
+      - name: 📝 Create post-release PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -74,21 +71,20 @@ jobs:
           NEXT_VERSION="${{ steps.next.outputs.next_version }}"
           BRANCH="post-release-$VERSION"
 
+          # Save patched changelog before switching branches
+          cp CHANGELOG.md /tmp/CHANGELOG.md
+
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
 
-          # Checkout main to create PR against it
           git fetch origin main
           git checkout -b $BRANCH origin/main
 
-          # Update to next dev version
           sed -i "s/^pluginVersion=.*/pluginVersion=$NEXT_VERSION/" gradle.properties
-
-          # Copy changelog updates if any
-          git checkout ${{ github.event.release.tag_name }} -- CHANGELOG.md 2>/dev/null || true
+          cp /tmp/CHANGELOG.md CHANGELOG.md
 
           git add gradle.properties CHANGELOG.md
-          git commit -m "Bump version to $NEXT_VERSION after $VERSION release" || echo "No changes"
+          git commit -m "Bump version to $NEXT_VERSION after $VERSION release"
           git push --set-upstream origin $BRANCH
 
           gh pr create \

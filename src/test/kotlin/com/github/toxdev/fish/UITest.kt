@@ -109,7 +109,16 @@ class UITest {
     fun testOpenFishFile() {
         remoteRobot.idea {
             with(projectViewTree) {
-                findText("test.fish").doubleClick()
+                waitFor(ofSeconds(10)) { hasText("test.fish") }
+                println("DEBUG: hasText returned true, now calling findText")
+                val allTexts = findAllText()
+                println("DEBUG: All texts in tree: ${allTexts.map { it.text }}")
+                val found = findAllText("test.fish")
+                println("DEBUG: findAllText('test.fish') returned ${found.size} items: ${found.map { it.text }}")
+                if (found.isEmpty()) {
+                    throw AssertionError("findAllText returned empty but hasText returned true. All texts: ${allTexts.map { it.text }}")
+                }
+                found.first().doubleClick()
                 waitFor(ofSeconds(10)) { isDumbMode().not() }
             }
             waitFor(ofSeconds(10)) {
@@ -122,7 +131,8 @@ class UITest {
     fun testFishFileHasSyntaxHighlighting() {
         remoteRobot.idea {
             with(projectViewTree) {
-                findText("test.fish").doubleClick()
+                waitFor(ofSeconds(10)) { hasText("test.fish") }
+                findAllText("test.fish").first().doubleClick()
                 waitFor(ofSeconds(10)) { isDumbMode().not() }
             }
         }
