@@ -1,11 +1,11 @@
 [versions]
 changelog = "2.5.0"
-grammarKit = "2023.3.0.1"
+grammarKit = "2023.3.0.2"
 intelliJPlatform = "2.11.0"
 junitPlatformLauncher = "6.0.2"
 jupiter = "6.0.2"
 kotlin = "2.3.10"
-kover = "0.9.5"
+kover = "0.9.7"
 ktlint = "14.0.1"
 lsp4ij = "0.19.1"
 mockk = "1.14.9"
