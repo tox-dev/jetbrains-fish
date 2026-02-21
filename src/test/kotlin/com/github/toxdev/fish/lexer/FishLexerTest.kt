@@ -217,6 +217,63 @@ class FishLexerTest {
     }
 
     @Test
+    fun `test escaped backslashes before escaped single quote`() {
+        val input = "echo '\\\\\\''"
+        val lexer = FishLexerAdapter()
+        lexer.start(input)
+
+        val tokens = collectTokens(lexer)
+
+        assertEquals("FishTokenType.WORD", tokens[0].first, "echo")
+        assertEquals("WHITE_SPACE", tokens[1].first)
+        assertEquals("FishTokenType.SINGLE_QUOTE", tokens[2].first, "opening quote")
+        assertEquals("FishTokenType.ESCAPE", tokens[3].first, "escaped backslash \\\\")
+        assertEquals("FishTokenType.ESCAPE", tokens[4].first, "escaped single quote \\'")
+        assertEquals("FishTokenType.SINGLE_QUOTE", tokens[5].first, "closing quote")
+        assertEquals(6, tokens.size)
+    }
+
+    @Test
+    fun `test multiple escaped backslashes in single quoted string`() {
+        val input = "'\\\\\\\\'"
+        val lexer = FishLexerAdapter()
+        lexer.start(input)
+
+        val tokens = collectTokens(lexer)
+
+        assertEquals("FishTokenType.SINGLE_QUOTE", tokens[0].first, "opening quote")
+        assertEquals("FishTokenType.ESCAPE", tokens[1].first, "first escaped backslash")
+        assertEquals("FishTokenType.ESCAPE", tokens[2].first, "second escaped backslash")
+        assertEquals("FishTokenType.SINGLE_QUOTE", tokens[3].first, "closing quote")
+        assertEquals(4, tokens.size)
+    }
+
+    @Test
+    fun `test lone backslash in single quoted string`() {
+        val input = "'a\\b'"
+        val lexer = FishLexerAdapter()
+        lexer.start(input)
+
+        val tokens = collectTokens(lexer)
+
+        assertEquals("FishTokenType.SINGLE_QUOTE", tokens[0].first, "opening quote")
+        assertEquals("FishTokenType.STRING_CONTENT", tokens[1].first, "a")
+        assertEquals("FishTokenType.STRING_CONTENT", tokens[2].first, "lone backslash")
+        assertEquals("FishTokenType.STRING_CONTENT", tokens[3].first, "b")
+        assertEquals("FishTokenType.SINGLE_QUOTE", tokens[4].first, "closing quote")
+        assertEquals(5, tokens.size)
+    }
+
+    private fun collectTokens(lexer: FishLexerAdapter): List<Pair<String, String>> {
+        val tokens = mutableListOf<Pair<String, String>>()
+        while (lexer.tokenType != null) {
+            tokens.add(lexer.tokenType.toString() to lexer.tokenText)
+            lexer.advance()
+        }
+        return tokens
+    }
+
+    @Test
     fun `analyze bad characters`() {
         val badChars = mutableMapOf<Char, MutableList<String>>()
 

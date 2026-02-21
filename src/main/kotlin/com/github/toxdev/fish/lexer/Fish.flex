@@ -163,6 +163,9 @@ WORD={WP}
 }
 
 <IN_SINGLE_QUOTE> {
+    // Escaped backslash inside single-quoted string (Fish 3.0+)
+    \\\\                { return FishTypes.ESCAPE; }
+
     // Escaped single quote inside single-quoted string (Fish 3.0+)
     \\'                 { return FishTypes.ESCAPE; }
 
@@ -175,8 +178,8 @@ WORD={WP}
     // Everything else is literal content (except newlines which are handled above)
     [^\\'\r\n]+         { return FishTypes.STRING_CONTENT; }
 
-    // One or more backslashes not followed by quote are literal
-    \\+                 { return FishTypes.STRING_CONTENT; }
+    // Lone backslash not followed by another backslash or quote is literal
+    \\                  { return FishTypes.STRING_CONTENT; }
 }
 
 <IN_ANSI_QUOTE> {
