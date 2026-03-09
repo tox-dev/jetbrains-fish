@@ -112,7 +112,7 @@ intellijPlatform {
                 val ideType =
                     org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
                         .fromCode(verifyIde)
-                ide(ideType, providers.gradleProperty("platformVersion").get())
+                create(ideType, providers.gradleProperty("platformVersion").get())
             } else {
                 recommended()
             }
