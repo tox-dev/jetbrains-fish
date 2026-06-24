@@ -72,6 +72,16 @@ dependencies {
     }
 }
 
+// Force patched versions of vulnerable transitive build/test dependencies (Dependabot alerts).
+// These come from the UI-test harness and JUnit test framework, not the shipped plugin.
+configurations.all {
+    resolutionStrategy.force(
+        "com.squareup.okhttp3:okhttp:4.12.0",
+        "com.squareup.okio:okio:3.9.0",
+        "org.assertj:assertj-core:3.27.7",
+    )
+}
+
 // JFlex lexer generation using Grammar-Kit plugin
 val generateFishLexer by tasks.registering(GenerateLexerTask::class) {
     sourceFile.set(file("src/main/kotlin/com/github/toxdev/fish/lexer/Fish.flex"))
