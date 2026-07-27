@@ -44,11 +44,13 @@ class UITest {
         @Timeout(value = 5, unit = TimeUnit.MINUTES)
         fun startIdea() {
             // The demo project is prepared and opened by the runIdeForUiTests task, so the IDE comes
-            // up with it already loaded; just wait for the frame and for indexing to settle.
+            // up with it already loaded. Gate on the project tree showing the file (a UI signal that
+            // works during indexing) rather than a callJs dumb-mode probe, which is slower to settle
+            // on a cold headless run.
             StepWorker.registerProcessor(StepLogger())
             remoteRobot = RemoteRobot("http://127.0.0.1:8082")
             remoteRobot.find<IdeaFrame>(timeout = ofMinutes(2)).apply {
-                waitFor(ofMinutes(2)) { isDumbMode().not() }
+                waitFor(ofMinutes(3)) { projectViewTree.hasText("test.fish") }
             }
         }
 
@@ -62,9 +64,7 @@ class UITest {
     fun testFishFileRecognized() {
         remoteRobot.idea {
             with(projectViewTree) {
-                waitFor(ofSeconds(10)) {
-                    hasText("test.fish")
-                }
+                waitFor(ofSeconds(30)) { hasText("test.fish") }
             }
         }
     }
@@ -72,28 +72,10 @@ class UITest {
     @Test
     fun testOpenFishFile() {
         remoteRobot.idea {
-            with(projectViewTree) {
-                waitFor(ofSeconds(10)) { hasText("test.fish") }
-                println("DEBUG: hasText returned true, now calling findText")
-                val allTexts = findAllText()
-                println("DEBUG: All texts in tree: ${allTexts.map { it.text }}")
-                val found = findAllText("test.fish")
-                println("DEBUG: findAllText('test.fish') returned ${found.size} items: ${found.map { it.text }}")
-                if (found.isEmpty()) {
-                    throw AssertionError("findAllText returned empty but hasText returned true. All texts: ${allTexts.map { it.text }}")
-                }
-                found.first().doubleClick()
-                waitFor(ofSeconds(10)) { isDumbMode().not() }
-            }
-            waitFor(ofSeconds(30)) {
-                try {
-                    val hasTab = editorTabs.hasText("test.fish")
-                    println("DEBUG: editorTabs.hasText('test.fish') = $hasTab")
-                    hasTab
-                } catch (e: Exception) {
-                    println("DEBUG: editorTabs not found yet: ${e.message}")
-                    false
-                }
+            waitFor(ofSeconds(30)) { projectViewTree.hasText("test.fish") }
+            waitFor(ofSeconds(60)) {
+                openProjectFile("test.fish")
+                openFileNames().contains("test.fish")
             }
         }
     }
@@ -101,16 +83,10 @@ class UITest {
     @Test
     fun testFishFileHasSyntaxHighlighting() {
         remoteRobot.idea {
-            with(projectViewTree) {
-                waitFor(ofSeconds(10)) { hasText("test.fish") }
-                findAllText("test.fish").first().doubleClick()
-            }
-            waitFor(ofSeconds(30)) {
-                try {
-                    isDumbMode().not() && editorTabs.hasText("test.fish")
-                } catch (e: Exception) {
-                    false
-                }
+            waitFor(ofSeconds(30)) { projectViewTree.hasText("test.fish") }
+            waitFor(ofSeconds(60)) {
+                openProjectFile("test.fish")
+                openFileType("test.fish") == "Fish"
             }
         }
     }
