@@ -133,9 +133,6 @@ jobs:
   ui-test:
     name: 🖥️ UI tests
     runs-on: ubuntu-latest
-    # Non-blocking: the remote-robot locators (welcome frame, Open dialog) need re-deriving for the
-    # 2026.2 UI. Tracked as follow-up; does not gate the platform upgrade.
-    continue-on-error: true
     steps:
       - name: 🧹 Free disk space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # main

@@ -226,7 +226,29 @@ val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
     type = org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdea
     version = providers.gradleProperty("platformVersion")
 
+    // Open a prepared demo project directly. The 2026.2 file chooser is a tree with no path field,
+    // so navigating the Open dialog via the UI is no longer viable; launch with the project instead.
+    val uiTestProject = layout.buildDirectory.dir("uiTestProject/demo")
+
     task {
+        val projectDir = uiTestProject.get().asFile
+        doFirst {
+            projectDir.deleteRecursively()
+            projectDir.mkdirs()
+            projectDir.resolve("test.fish").writeText(
+                """
+                #!/usr/bin/env fish
+
+                function greet
+                    echo "Hello, World!"
+                end
+
+                greet
+                """.trimIndent() + "\n",
+            )
+        }
+        args(projectDir.absolutePath)
+
         jvmArgumentProviders +=
             CommandLineArgumentProvider {
                 buildList {
