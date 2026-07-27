@@ -223,7 +223,7 @@ tasks {
 }
 
 val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
-    type = org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity
+    type = org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdea
     version = providers.gradleProperty("platformVersion")
 
     task {
