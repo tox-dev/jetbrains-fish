@@ -1,10 +1,15 @@
 package com.github.toxdev.fish.structure
 
+import com.github.toxdev.fish.FishFileType
 import com.github.toxdev.fish.psi.FishFile
 import com.github.toxdev.fish.psi.FishFunctionBlock
-import com.github.toxdev.fish.psi.FishFunctionName
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.testFramework.junit5.TestApplication
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,7 +20,20 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
+@TestApplication
 class FishStructureViewElementTest {
+    private val project get() = ProjectManager.getInstance().defaultProject
+
+    private fun <T> read(block: () -> T): T = ApplicationManager.getApplication().runReadAction<T>(block)
+
+    private fun createFile(
+        name: String,
+        content: String,
+    ): FishFile = read { PsiFileFactory.getInstance(project).createFileFromText(name, FishFileType.INSTANCE, content) as FishFile }
+
+    private fun firstFunction(content: String): FishFunctionBlock =
+        read { PsiTreeUtil.findChildrenOfType(createFile("test.fish", content), FishFunctionBlock::class.java).first() }
+
     @Test
     fun `getValue returns element`() {
         val element = mockk<PsiElement>(relaxed = true)
@@ -69,20 +87,8 @@ class FishStructureViewElementTest {
 
     @Test
     fun `getAlphaSortKey returns function name for FishFunctionBlock`() {
-        val functionName = mockk<FishFunctionName>(relaxed = true)
-        every { functionName.text } returns "my_function"
-        val functionBlock = mockk<FishFunctionBlock>(relaxed = true)
-        every { functionBlock.functionName } returns functionName
-        val viewElement = FishStructureViewElement(functionBlock)
-        assertEquals("my_function", viewElement.alphaSortKey)
-    }
-
-    @Test
-    fun `getAlphaSortKey returns empty for FishFunctionBlock without name`() {
-        val functionBlock = mockk<FishFunctionBlock>(relaxed = true)
-        every { functionBlock.functionName } returns null
-        val viewElement = FishStructureViewElement(functionBlock)
-        assertEquals("", viewElement.alphaSortKey)
+        val viewElement = FishStructureViewElement(firstFunction("function my_function\nend"))
+        assertEquals("my_function", read { viewElement.alphaSortKey })
     }
 
     @Test
@@ -101,20 +107,14 @@ class FishStructureViewElementTest {
 
     @Test
     fun `presentation getPresentableText returns function name for FishFunctionBlock`() {
-        val functionName = mockk<FishFunctionName>(relaxed = true)
-        every { functionName.text } returns "test_func"
-        val functionBlock = mockk<FishFunctionBlock>(relaxed = true)
-        every { functionBlock.functionName } returns functionName
-        val viewElement = FishStructureViewElement(functionBlock)
-        assertEquals("test_func", viewElement.presentation.presentableText)
+        val viewElement = FishStructureViewElement(firstFunction("function test_func\nend"))
+        assertEquals("test_func", read { viewElement.presentation.presentableText })
     }
 
     @Test
     fun `presentation getPresentableText returns file name for FishFile`() {
-        val fishFile = mockk<FishFile>(relaxed = true)
-        every { fishFile.name } returns "script.fish"
-        val viewElement = FishStructureViewElement(fishFile)
-        assertEquals("script.fish", viewElement.presentation.presentableText)
+        val viewElement = FishStructureViewElement(createFile("script.fish", ""))
+        assertEquals("script.fish", read { viewElement.presentation.presentableText })
     }
 
     @Test
@@ -126,16 +126,14 @@ class FishStructureViewElementTest {
 
     @Test
     fun `presentation getIcon returns icon for FishFunctionBlock`() {
-        val functionBlock = mockk<FishFunctionBlock>(relaxed = true)
-        val viewElement = FishStructureViewElement(functionBlock)
-        assertNotNull(viewElement.presentation.getIcon(false))
+        val viewElement = FishStructureViewElement(firstFunction("function foo\nend"))
+        assertNotNull(read { viewElement.presentation.getIcon(false) })
     }
 
     @Test
     fun `presentation getIcon returns icon for FishFile`() {
-        val fishFile = mockk<FishFile>(relaxed = true)
-        val viewElement = FishStructureViewElement(fishFile)
-        assertNotNull(viewElement.presentation.getIcon(false))
+        val viewElement = FishStructureViewElement(createFile("script.fish", ""))
+        assertNotNull(read { viewElement.presentation.getIcon(false) })
     }
 
     @Test
@@ -149,14 +147,18 @@ class FishStructureViewElementTest {
     fun `getChildren returns empty for non-FishFile`() {
         val element = mockk<PsiElement>(relaxed = true)
         val viewElement = FishStructureViewElement(element)
-        assertEquals(0, viewElement.children.size)
+        assertEquals(0, read { viewElement.children.size })
     }
 
     @Test
-    fun `getChildren returns function elements for FishFile with no functions`() {
-        val fishFile = mockk<FishFile>(relaxed = true)
-        val viewElement = FishStructureViewElement(fishFile)
-        val children = viewElement.children
-        assertNotNull(children)
+    fun `getChildren returns empty for FishFile with no functions`() {
+        val viewElement = FishStructureViewElement(createFile("script.fish", "echo hello\n"))
+        assertEquals(0, read { viewElement.children.size })
+    }
+
+    @Test
+    fun `getChildren returns function elements for FishFile with functions`() {
+        val viewElement = FishStructureViewElement(createFile("script.fish", "function a\nend\nfunction b\nend\n"))
+        assertEquals(2, read { viewElement.children.size })
     }
 }

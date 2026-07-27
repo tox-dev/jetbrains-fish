@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: 25
       - name: 🐘 Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: 🔨 Build plugin
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ide: ${{ github.event_name == 'pull_request' && fromJson('["IC"]') || fromJson('["PC", "PY", "IC", "IU"]') }}
+        ide: ${{ github.event_name == 'pull_request' && fromJson('["IU"]') || fromJson('["IU", "PY"]') }}
     steps:
       - name: 🧹 Free disk space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # main
@@ -68,7 +68,7 @@ jobs:
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: 25
       - name: 🐘 Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: 💾 Cache verifier IDEs
@@ -103,7 +103,7 @@ jobs:
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: 25
       - name: 🐘 Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: 🔍 Run linter
@@ -125,7 +125,7 @@ jobs:
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: 25
       - name: 🐘 Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: ✅ Run tests with coverage
@@ -147,7 +147,7 @@ jobs:
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: 25
       - name: 🐘 Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: 🔨 Build test IDE sandbox

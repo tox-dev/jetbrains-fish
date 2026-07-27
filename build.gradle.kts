@@ -37,7 +37,7 @@ version =
         }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 repositories {
@@ -57,7 +57,11 @@ sourceSets {
 dependencies {
     testImplementation(libs.jupiter)
     testImplementation(libs.jupiterParams)
-    testImplementation(libs.mockk)
+    testImplementation(libs.mockk) {
+        // The IntelliJ Platform bundles a patched kotlinx-coroutines fork; a vanilla one on the
+        // test classpath shadows it and breaks the test framework (runBlockingWithParallelismCompensation).
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+    }
     testImplementation(libs.remoteRobot)
     testImplementation(libs.remoteRobotFixtures)
     testRuntimeOnly(libs.jupiterEngine)
@@ -68,6 +72,7 @@ dependencies {
         plugin("com.redhat.devtools.lsp4ij", libs.versions.lsp4ij.get())
         pluginVerifier()
         zipSigner()
+        testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.JUnit5)
     }
 }
