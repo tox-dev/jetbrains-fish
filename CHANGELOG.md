@@ -4,18 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-07-29
+
+${GITHUB_EVENT_RELEASE_BODY}
+
 ## [0.1.8] - 2026-02-21
 
 - Bump version to `0.1.8-dev` by @gaborbernat in https://github.com/tox-dev/jetbrains-fish/pull/22
-
 - 👷 ci(ui-test): fix IDE startup timeout in CI by @gaborbernat in https://github.com/tox-dev/jetbrains-fish/pull/29
-
 - 🐛 fix(lexer): handle escaped backslashes in single-quoted strings by @gaborbernat in
   https://github.com/tox-dev/jetbrains-fish/pull/36
-
 - @pre-commit-ci[bot] made their first contribution in https://github.com/tox-dev/jetbrains-fish/pull/32
-
-**Full Changelog**: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.7...v0.1.8
 
 ## [0.1.7] - 2026-01-29
 
@@ -72,4 +71,5 @@ All notable changes to this project will be documented in this file.
 [0.1.6]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.5...v0.1.6
 [0.1.7]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.6...v0.1.7
 [0.1.8]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.7...v0.1.8
-[unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.8...HEAD
+[0.1.9]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.8...v0.1.9
+[unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.9...HEAD
