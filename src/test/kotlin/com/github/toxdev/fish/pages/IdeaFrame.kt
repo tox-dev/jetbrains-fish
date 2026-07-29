@@ -26,24 +26,47 @@ class IdeaFrame(
                 Duration.ofSeconds(30),
             )
 
-    val editorTabs
-        get() =
-            find<ContainerFixture>(
-                byXpath("EditorTabs", "//div[@class='EditorTabs']"),
-                Duration.ofSeconds(10),
-            )
-
-    fun isDumbMode(): Boolean =
-        callJs(
+    // Drive the editor through the platform rather than the mouse: robot clicks depend on the IDE
+    // window being frontmost, which is not guaranteed, and the tab widgets are unstable across
+    // releases. Opening and inspecting via the API is what the tests actually care about.
+    fun openProjectFile(name: String) =
+        runJs(
             """
-            const frameHelper = com.intellij.openapi.wm.impl.ProjectFrameHelper.getFrameHelper(component)
-            if (frameHelper) {
-                const project = frameHelper.getProject()
-                project ? com.intellij.openapi.project.DumbService.isDumb(project) : true
-            } else {
-                true
+            const project = com.intellij.openapi.wm.impl.ProjectFrameHelper.getFrameHelper(component).getProject()
+            const dir = com.intellij.openapi.project.ProjectUtil.guessProjectDir(project)
+            const file = dir.findFileByRelativePath('$name')
+            if (file != null) {
+                com.intellij.openapi.fileEditor.FileEditorManager.getInstance(project).openFile(file, true)
             }
-        """,
+            """,
             true,
         )
+
+    fun openFileNames(): List<String> =
+        callJs<String>(OPEN_FILES_SCRIPT, true)
+            .split("\n")
+            .filter { it.isNotEmpty() }
+
+    fun openFileType(name: String): String =
+        callJs(
+            """
+            const project = com.intellij.openapi.wm.impl.ProjectFrameHelper.getFrameHelper(component).getProject()
+            const files = com.intellij.openapi.fileEditor.FileEditorManager.getInstance(project).getOpenFiles()
+            let type = ""
+            for (let i = 0; i < files.length; i++) { if (files[i].getName() == '$name') { type = files[i].getFileType().getName() } }
+            type
+            """,
+            true,
+        )
+
+    private companion object {
+        const val OPEN_FILES_SCRIPT =
+            """
+            const project = com.intellij.openapi.wm.impl.ProjectFrameHelper.getFrameHelper(component).getProject()
+            const files = com.intellij.openapi.fileEditor.FileEditorManager.getInstance(project).getOpenFiles()
+            const names = []
+            for (let i = 0; i < files.length; i++) { names.push(files[i].getName()) }
+            names.join('\n')
+            """
+    }
 }

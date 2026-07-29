@@ -4,12 +4,11 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.Application
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
@@ -55,7 +54,6 @@ class FishLspNotificationTest {
 }
 
 class FishLspNotificationFunctionTest {
-    private lateinit var application: Application
     private lateinit var settings: FishLspSettings
     private lateinit var project: Project
     private lateinit var notificationGroupManager: NotificationGroupManager
@@ -65,17 +63,18 @@ class FishLspNotificationFunctionTest {
     @BeforeEach
     fun setUp() {
         clearAllMocks()
-        application = mockk(relaxed = true)
         settings = FishLspSettings()
         project = mockk(relaxed = true)
         notificationGroupManager = mockk(relaxed = true)
         notificationGroup = mockk(relaxed = true)
         notification = mockk(relaxed = true)
 
-        mockkStatic(ApplicationManager::class)
+        // Mock only the plugin's own singletons. Replacing the global ApplicationManager here would
+        // hand a relaxed mock to unrelated platform background coroutines, which then fail casting
+        // its default return values and abort this test.
+        mockkObject(FishLspSettings.Companion)
         mockkStatic(NotificationGroupManager::class)
-        every { ApplicationManager.getApplication() } returns application
-        every { application.getService(FishLspSettings::class.java) } returns settings
+        every { FishLspSettings.getInstance() } returns settings
         every { NotificationGroupManager.getInstance() } returns notificationGroupManager
         every { notificationGroupManager.getNotificationGroup(any()) } returns notificationGroup
         every { notificationGroup.createNotification(any<String>(), any<String>(), any<NotificationType>()) } returns notification
