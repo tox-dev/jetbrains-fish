@@ -96,9 +96,14 @@ class FishLspSettingsCompanionTest {
     @BeforeEach
     fun setUp() {
         clearAllMocks()
+        val realApplication = ApplicationManager.getApplication()
         application = mockk(relaxed = true)
         mockkStatic(ApplicationManager::class)
         every { ApplicationManager.getApplication() } returns application
+        // Delegate unmapped service lookups to the real application so platform background coroutines
+        // don't receive the relaxed mock's default return value and crash while this test holds the
+        // ApplicationManager mock. Individual tests override getService for FishLspSettings.
+        every { application.getService(any<Class<*>>()) } answers { realApplication?.getService(firstArg<Class<*>>()) }
     }
 
     @AfterEach
