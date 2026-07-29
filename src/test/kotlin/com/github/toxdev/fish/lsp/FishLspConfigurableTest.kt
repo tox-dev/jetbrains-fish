@@ -1,11 +1,9 @@
 package com.github.toxdev.fish.lsp
 
-import com.intellij.openapi.application.Application
-import com.intellij.openapi.application.ApplicationManager
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -14,18 +12,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class FishLspConfigurableTest {
-    private lateinit var application: Application
     private lateinit var settings: FishLspSettings
 
     @BeforeEach
     fun setUp() {
         clearAllMocks()
-        application = mockk(relaxed = true)
         settings = mockk(relaxed = true)
 
-        mockkStatic(ApplicationManager::class)
-        every { ApplicationManager.getApplication() } returns application
-        every { application.getService(FishLspSettings::class.java) } returns settings
+        // Mock the settings accessor directly rather than the global ApplicationManager, which would
+        // hand a relaxed mock to platform background coroutines and crash them.
+        mockkObject(FishLspSettings.Companion)
+        every { FishLspSettings.getInstance() } returns settings
         every { settings.fishLspPath } returns ""
     }
 
