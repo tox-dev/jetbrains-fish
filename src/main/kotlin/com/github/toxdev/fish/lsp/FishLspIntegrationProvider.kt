@@ -5,18 +5,18 @@ import com.github.toxdev.fish.FishIcons
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.LspServer
-import com.intellij.platform.lsp.api.LspServerSupportProvider
-import com.intellij.platform.lsp.api.LspServerSupportProvider.LspServerStarter
-import com.intellij.platform.lsp.api.lsWidget.LspServerWidgetItem
+import com.intellij.platform.lsp.api.LspClient
+import com.intellij.platform.lsp.api.LspIntegrationProvider
+import com.intellij.platform.lsp.api.LspIntegrationProvider.LspClientStarter
+import com.intellij.platform.lsp.api.lsWidget.LspClientWidgetItem
 
-private val LOG = logger<FishLspServerSupportProvider>()
+private val LOG = logger<FishLspIntegrationProvider>()
 
-class FishLspServerSupportProvider : LspServerSupportProvider {
+class FishLspIntegrationProvider : LspIntegrationProvider {
     override fun fileOpened(
         project: Project,
         file: VirtualFile,
-        serverStarter: LspServerStarter,
+        clientStarter: LspClientStarter,
     ) {
         if (file.fileType != FishFileType.INSTANCE) return
 
@@ -27,11 +27,11 @@ class FishLspServerSupportProvider : LspServerSupportProvider {
         }
 
         LOG.info("Starting Fish LSP server for ${file.name}")
-        serverStarter.ensureServerStarted(FishLspServerDescriptor(project))
+        clientStarter.ensureClientStarted(FishLspClientDescriptor(project))
     }
 
-    override fun createLspServerWidgetItem(
-        lspServer: LspServer,
+    override fun createWidgetItem(
+        lspClient: LspClient,
         currentFile: VirtualFile?,
-    ): LspServerWidgetItem = LspServerWidgetItem(lspServer, currentFile, FishIcons.FILE, FishLspConfigurable::class.java)
+    ): LspClientWidgetItem = LspClientWidgetItem(lspClient, currentFile, FishIcons.FILE, FishLspConfigurable::class.java)
 }

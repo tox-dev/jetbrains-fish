@@ -4,11 +4,11 @@ import com.github.toxdev.fish.FishFileType
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
+import com.intellij.platform.lsp.api.ProjectWideLspClientDescriptor
 
-class FishLspServerDescriptor(
+class FishLspClientDescriptor(
     project: Project,
-) : ProjectWideLspServerDescriptor(project, "Fish LSP") {
+) : ProjectWideLspClientDescriptor(project, "Fish LSP") {
     override fun isSupportedFile(file: VirtualFile): Boolean = file.fileType == FishFileType.INSTANCE
 
     override fun createCommandLine(): GeneralCommandLine {
