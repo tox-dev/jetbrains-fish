@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-08-03
+
+${GITHUB_EVENT_RELEASE_BODY}
+
 ## [0.1.9] - 2026-07-29
 
 ${GITHUB_EVENT_RELEASE_BODY}
@@ -64,12 +68,14 @@ ${GITHUB_EVENT_RELEASE_BODY}
 
 - Basic Fish shell language plugin structure.
 
-[0.1.0]: https://github.com/tox-dev/jetbrains-fish/commits/v0.1.0
-[0.1.1]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.0...v0.1.1
-[0.1.4]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.1...v0.1.4
-[0.1.5]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.4...v0.1.5
-[0.1.6]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.5...v0.1.6
-[0.1.7]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.6...v0.1.7
-[0.1.8]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.7...v0.1.8
+[Unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.10...HEAD
+[0.1.10]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.8...v0.1.9
+[0.1.8]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.1...v0.1.4
+[0.1.1]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/tox-dev/jetbrains-fish/commits/v0.1.0
 [unreleased]: https://github.com/tox-dev/jetbrains-fish/compare/v0.1.9...HEAD
