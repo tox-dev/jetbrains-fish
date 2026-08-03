@@ -2,36 +2,36 @@ package com.github.toxdev.fish.lsp
 
 import com.github.toxdev.fish.FishFileType
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.LspServer
+import com.intellij.platform.lsp.api.LspClient
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
-class FishLspServerSupportProviderTest {
+class FishLspIntegrationProviderTest {
     @Test
     fun `provider is instantiable`() {
-        val provider = FishLspServerSupportProvider()
+        val provider = FishLspIntegrationProvider()
         assertNotNull(provider)
     }
 
     @Test
-    fun `createLspServerWidgetItem returns widget item`() {
-        val provider = FishLspServerSupportProvider()
-        val lspServer = mockk<LspServer>(relaxed = true)
+    fun `createWidgetItem returns widget item`() {
+        val provider = FishLspIntegrationProvider()
+        val lspClient = mockk<LspClient>(relaxed = true)
         val currentFile = mockk<VirtualFile>()
 
-        val widgetItem = provider.createLspServerWidgetItem(lspServer, currentFile)
+        val widgetItem = provider.createWidgetItem(lspClient, currentFile)
 
         assertNotNull(widgetItem)
     }
 
     @Test
-    fun `createLspServerWidgetItem with null file returns widget item`() {
-        val provider = FishLspServerSupportProvider()
-        val lspServer = mockk<LspServer>(relaxed = true)
+    fun `createWidgetItem with null file returns widget item`() {
+        val provider = FishLspIntegrationProvider()
+        val lspClient = mockk<LspClient>(relaxed = true)
 
-        val widgetItem = provider.createLspServerWidgetItem(lspServer, null)
+        val widgetItem = provider.createWidgetItem(lspClient, null)
 
         assertNotNull(widgetItem)
     }

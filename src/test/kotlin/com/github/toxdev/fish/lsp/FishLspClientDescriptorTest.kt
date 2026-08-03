@@ -16,8 +16,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 @TestApplication
-class FishLspServerDescriptorTest {
-    private lateinit var descriptor: FishLspServerDescriptor
+class FishLspClientDescriptorTest {
+    private lateinit var descriptor: FishLspClientDescriptor
     private lateinit var settings: FishLspSettings
 
     @BeforeEach
@@ -28,7 +28,7 @@ class FishLspServerDescriptorTest {
         every { FishLspSettings.getInstance() } returns settings
 
         val project = ProjectManager.getInstance().defaultProject
-        descriptor = FishLspServerDescriptor(project)
+        descriptor = FishLspClientDescriptor(project)
     }
 
     @AfterEach
