@@ -11,7 +11,7 @@ lsp4ij = "0.20.1"
 mockk = "1.14.11"
 remoteRobot = "0.11.23"
 testLogger = "4.0.0"
-versionPlugin = "0.58.0"
+versionPlugin = "0.60.0"
 versionUpdate = "1.1.0"
 
 [libraries]
