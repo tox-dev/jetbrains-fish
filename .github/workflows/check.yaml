@@ -86,6 +86,7 @@ jobs:
         with:
           name: pluginVerifier-result-${{ matrix.ide }}
           path: ${{ github.workspace }}/build/reports/pluginVerifier
+          if-no-files-found: ignore
   lint:
     name: 🧹 Lint
     runs-on: ubuntu-26.04
