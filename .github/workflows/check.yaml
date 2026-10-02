@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: 🧹 Free disk space
-        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # main
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
         with:
           tool-cache: false
           large-packages: false
@@ -28,7 +28,7 @@ jobs:
           distribution: zulu
           java-version: 25
       - name: 🐘 Set up Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
       - name: 🔨 Build plugin
         run: ./gradlew --console=plain buildPlugin
       - name: 📁 Prepare artifact
@@ -52,7 +52,7 @@ jobs:
         ide: ${{ github.event_name == 'pull_request' && fromJson('["IU"]') || fromJson('["IU", "PY"]') }}
     steps:
       - name: 🧹 Free disk space
-        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # main
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
         with:
           tool-cache: false
           large-packages: false
@@ -70,9 +70,9 @@ jobs:
           distribution: zulu
           java-version: 25
       - name: 🐘 Set up Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
       - name: 💾 Cache verifier IDEs
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pluginVerifier/ides
           key: plugin-verifier-ides-${{ matrix.ide }}-${{ hashFiles('gradle.properties') }}
@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: 🧹 Free disk space
-        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # main
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
         with:
           tool-cache: false
           large-packages: false
@@ -105,7 +105,7 @@ jobs:
           distribution: zulu
           java-version: 25
       - name: 🐘 Set up Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
       - name: 🔍 Run linter
         run: ./gradlew ktlintCheck
   test:
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: 🧹 Free disk space
-        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # main
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
         with:
           tool-cache: false
           large-packages: false
@@ -127,7 +127,7 @@ jobs:
           distribution: zulu
           java-version: 25
       - name: 🐘 Set up Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
       - name: ✅ Run tests with coverage
         run: ./gradlew test koverVerify
   ui-test:
@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: 🧹 Free disk space
-        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # main
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
         with:
           tool-cache: false
           large-packages: false
@@ -149,7 +149,7 @@ jobs:
           distribution: zulu
           java-version: 25
       - name: 🐘 Set up Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
       - name: 🔨 Build test IDE sandbox
         run: ./gradlew buildPlugin compileTestKotlin
       - name: 🖥️ Run UI tests
