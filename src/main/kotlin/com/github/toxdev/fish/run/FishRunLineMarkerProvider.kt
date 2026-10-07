@@ -6,14 +6,13 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
+import com.intellij.psi.util.PsiTreeUtil
 import java.util.function.Function
 import javax.swing.Icon
 
 class FishRunLineMarkerProvider : RunLineMarkerContributor() {
     override fun getInfo(element: PsiElement): Info? {
-        if (element.firstChild != null) return null
-        if (!isFirstLeafInFile(element)) return null
+        if (element.firstChild != null || PsiTreeUtil.prevLeaf(element) != null) return null
         val file = element.containingFile as? FishFile ?: return null
         val virtualFile = file.virtualFile ?: return null
         if (virtualFile.extension != "fish") return null
@@ -31,19 +30,5 @@ class FishRunLineMarkerProvider : RunLineMarkerContributor() {
         tooltipProvider: Function<in PsiElement, String>,
     ) : Info(icon, actions, tooltipProvider) {
         override fun shouldReplace(other: Info): Boolean = true
-    }
-
-    private fun isFirstLeafInFile(element: PsiElement): Boolean {
-        val file = element.containingFile as? PsiFile ?: return false
-        val firstLeaf = findFirstLeaf(file) ?: return false
-        return element == firstLeaf
-    }
-
-    private fun findFirstLeaf(element: PsiElement): PsiElement? {
-        var current: PsiElement = element
-        while (current.firstChild != null) {
-            current = current.firstChild
-        }
-        return current
     }
 }
