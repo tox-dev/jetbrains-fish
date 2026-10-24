@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened]
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -149,34 +149,28 @@ jobs:
           echo "IDE is ready"
           ./gradlew uiTest
           kill %1 %2 || true
-  changelog:
-    name: 📝 News fragment
-    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip news')
+  hook-cooldown:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-26.04
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: tox-dev/github-workflows/check-hook-update-cooldown@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
         with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Require a user-facing change
-        run: |
-          found=0
-          while IFS= read -r path; do
-            if [[ "$path" =~ ^changelog\.d/[0-9]+\.(feature|bugfix|doc)\.md$ && -s "$path" ]]; then
-              found=1
-            fi
-          done < <(git diff --name-only --diff-filter=AM "origin/$GITHUB_BASE_REF"...HEAD)
-          if (( found == 0 )); then
-            echo "::error::add a nonempty changelog.d/<PR>.<type>.md fragment or apply skip news"
-            exit 1
-          fi
+          release-app-client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
   gate:
-    name: Required checks pass
-    if: always()
-    needs: [build, verify, lint, test, ui-test, changelog]
+    name: ${{ github.event_name == 'pull_request' && 'Required checks pass' || 'Non-PR checks pass' }}
+    if: ${{ !cancelled() }}
+    needs: [build, verify, lint, test, ui-test, hook-cooldown]
     runs-on: ubuntu-26.04
     steps:
       - env:
           NEEDS_JSON: ${{ toJSON(needs) }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          jq -e 'all(to_entries[]; .value.result == "success" or (.key == "changelog" and .value.result == "skipped"))' <<< "$NEEDS_JSON"
+          jq -e --arg event "$EVENT_NAME" \
+            'all(to_entries[]; .value.result == "success" or
+              ((.key == "hook-cooldown") and .value.result == "skipped" and $event != "pull_request"))' \
+            <<<"$NEEDS_JSON"

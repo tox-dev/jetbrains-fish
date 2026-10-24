@@ -1,0 +1,105 @@
+name: Finalize GitHub Release
+on:
+  workflow_dispatch:
+    inputs:
+      source-run-id:
+        description: Tag release workflow run that accepted the Marketplace upload
+        required: true
+        type: string
+      acceptance-artifact-id:
+        description: Immutable Marketplace acceptance receipt artifact ID
+        required: true
+        type: string
+      signed-artifact-id:
+        description: Signed ZIP artifact ID from that run
+        required: true
+        type: string
+      notes-artifact-id:
+        description: Release notes artifact ID from that run
+        required: true
+        type: string
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  finalize:
+    runs-on: ubuntu-26.04
+    environment: release
+    steps:
+      - name: Verify the original tag run
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source-run-id }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/tags/$TAG"
+          case "$TAG" in v?*) ;; *) exit 1 ;; esac
+          case "$SOURCE_RUN" in '' | *[!0-9]*) exit 1 ;; esac
+          commit=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN" \
+            --jq '. | select(.event == "push" and .path == ".github/workflows/release.yaml" and .head_branch == env.TAG) | .head_sha')
+          test -n "$commit"
+          echo "commit=$commit" >>"$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ inputs.acceptance-artifact-id }}
+          run-id: ${{ inputs.source-run-id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/acceptance
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ inputs.signed-artifact-id }}
+          run-id: ${{ inputs.source-run-id }}
+          github-token: ${{ github.token }}
+          path: dist
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ inputs.notes-artifact-id }}
+          run-id: ${{ inputs.source-run-id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/notes
+      - name: Verify the accepted update and original artifacts
+        env:
+          TAG: ${{ github.ref_name }}
+          COMMIT: ${{ steps.source.outputs.commit }}
+          SOURCE_RUN: ${{ inputs.source-run-id }}
+          SIGNED_ARTIFACT_ID: ${{ inputs.signed-artifact-id }}
+          NOTES_ARTIFACT_ID: ${{ inputs.notes-artifact-id }}
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/acceptance/marketplace-acceptance.json"
+          [[ -f "$receipt" && ! -L "$receipt" ]] || exit 1
+          test "$(find "$RUNNER_TEMP/acceptance" -mindepth 1 -printf . | wc -c)" -eq 1
+          jq -e --arg repository "$GITHUB_REPOSITORY" --arg tag "$TAG" --arg commit "$COMMIT" \
+            --arg version "${TAG#v}" --argjson runId "$SOURCE_RUN" \
+            --argjson signedArtifactId "$SIGNED_ARTIFACT_ID" --argjson notesArtifactId "$NOTES_ARTIFACT_ID" \
+            '.schema == 2 and .repository == $repository and .tag == $tag and .commit == $commit and
+             .sourceRunId == $runId and .pluginId == 29973 and .version == $version and
+             .channel == "" and
+             .signedArtifactId == $signedArtifactId and .notesArtifactId == $notesArtifactId' "$receipt" >/dev/null
+          archive=$(jq -r .signedArchive "$receipt")
+          case "$archive" in '' | */* | *[!A-Za-z0-9._+-]*) exit 1 ;; esac
+          [[ -f "dist/$archive" && ! -L "dist/$archive" ]] || exit 1
+          test "$(find dist -mindepth 1 -printf . | wc -c)" -eq 1
+          expected_sha=$(jq -r .sha256 "$receipt")
+          test "${#expected_sha}" -eq 64
+          case "$expected_sha" in *[!0-9a-f]*) exit 1 ;; esac
+          test "$(sha256sum "dist/$archive" | cut -d' ' -f1)" = "$expected_sha"
+          unzip -tq "dist/$archive" >/dev/null
+          test -f "$RUNNER_TEMP/notes/release-notes.md"
+          test ! -L "$RUNNER_TEMP/notes/release-notes.md"
+          test "$(find "$RUNNER_TEMP/notes" -mindepth 1 -printf . | wc -c)" -eq 1
+          test "$(sha256sum "$RUNNER_TEMP/notes/release-notes.md" | cut -d' ' -f1)" = "$(jq -r .notesSha256 "$receipt")"
+      - uses: tox-dev/github-workflows/publish-github-release@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          tag: ${{ github.ref_name }}
+          commit: ${{ steps.source.outputs.commit }}
+          title: ${{ github.ref_name }}
+          notes-file: ${{ runner.temp }}/notes/release-notes.md
+          assets-directory: dist
