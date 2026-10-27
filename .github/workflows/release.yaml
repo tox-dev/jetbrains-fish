@@ -29,7 +29,7 @@ jobs:
           python-version: "3.15"
           enable-cache: false
       - name: 📦 Install locked release tools
-        uses: tox-dev/github-workflows/install-locked-tools@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/install-locked-tools@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           groups: release-notes
           venv: ${{ runner.temp }}/release-tools
@@ -38,7 +38,7 @@ jobs:
         run: echo "commit=$(git rev-parse HEAD)" >>"$GITHUB_OUTPUT"
       - name: 🏷️ Select previous tag
         id: previous
-        uses: tox-dev/github-workflows/select-previous-tag@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/select-previous-tag@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           tag: ${{ github.ref_name }}
   release-notes:
@@ -62,12 +62,12 @@ jobs:
           python-version: "3.15"
           enable-cache: false
       - name: 📦 Install locked release tools
-        uses: tox-dev/github-workflows/install-locked-tools@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/install-locked-tools@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           groups: release-notes
           venv: ${{ runner.temp }}/release-tools
       - name: 📝 Render release notes
-        uses: tox-dev/github-workflows/render-release-notes@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/render-release-notes@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           tag: ${{ github.ref_name }}
           previous: ${{ needs.notes.outputs.previous }}
@@ -152,7 +152,7 @@ jobs:
           path: dist
       - name: ✍️ Sign verified plugin ZIP
         id: signed
-        uses: tox-dev/github-workflows/sign-jetbrains-plugin@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/sign-jetbrains-plugin@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           archive: dist/${{ needs.build-unsigned.outputs.archive_name }}
           sha256: ${{ needs.build-unsigned.outputs.archive_sha }}
@@ -197,7 +197,7 @@ jobs:
           python-version: "3.15"
           enable-cache: false
       - name: 📦 Install locked release tools
-        uses: tox-dev/github-workflows/install-locked-tools@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/install-locked-tools@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           groups: release-notes
           venv: ${{ runner.temp }}/release-tools
@@ -233,7 +233,7 @@ jobs:
           artifact-ids: ${{ needs.release-notes.outputs.artifact-id }}
           path: ${{ runner.temp }}/marketplace-notes
       - name: 🚀 Publish signed ZIP
-        uses: tox-dev/github-workflows/publish-jetbrains-marketplace@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/publish-jetbrains-marketplace@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         with:
           archive: dist/${{ needs.build-signed.outputs.archive_name }}
           sha256: ${{ needs.build-signed.outputs.archive_sha }}
@@ -273,7 +273,7 @@ jobs:
           read -r digest _ < <(sha256sum "${archives[0]}")
           test "$digest" = "$EXPECTED_SHA"
       - name: 🚀 Publish GitHub release
-        uses: tox-dev/github-workflows/publish-github-release@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/publish-github-release@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         env:
           GH_TOKEN: ${{ github.token }}
         with:
@@ -374,7 +374,7 @@ jobs:
           artifact-ids: ${{ needs.post-release-prepare.outputs.artifact-id }}
           path: ${{ runner.temp }}/post-release
       - name: 🔀 Open the post-release PR
-        uses: tox-dev/github-workflows/publish-post-release-pr@29d4d5e6900db30502d7249043b59c18284a9777 # 6.2.0
+        uses: tox-dev/github-workflows/publish-post-release-pr@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
         with:
