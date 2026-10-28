@@ -6,10 +6,11 @@ disagree, SECURITY.md wins and we fix this file.
 
 ## How jetbrains-fish works
 
-The plugin lexes and highlights `.fish` files inside the IDE. When fish-lsp is configured or found on `PATH`, it starts
-`fish-lsp start --stdio` and forwards editor requests to it for completion, diagnostics and navigation. A fish run
-configuration starts the `fish` binary with the script path and arguments as separate process arguments, in the script's
-directory unless the configuration names another.
+The plugin lexes and highlights `.fish` files inside the IDE. When fish-lsp is configured in the IDE-level settings or
+found on `PATH`, it starts `fish-lsp start --stdio` and forwards editor requests to it for completion, diagnostics and
+navigation. A fish run configuration starts the `fish` binary it names, or the first one on `PATH`, with the script path
+and whitespace-separated arguments as separate process arguments, in the script's directory unless the configuration
+names another.
 
 ```mermaid
 flowchart LR
@@ -31,19 +32,19 @@ which first needs a trusted element compromised is out of scope; the first triag
 [DOMPurify](https://github.com/cure53/DOMPurify/blob/main/SECURITY.md#what-we-consider-a-vulnerability) puts it, is what
 the attacker controls.
 
-| Project                                                                                          | Language        | Where it draws the line                                                                             |
-| ------------------------------------------------------------------------------------------------ | --------------- | --------------------------------------------------------------------------------------------------- |
-| [JetBrains project trust](https://www.jetbrains.com/help/idea/project-security.html)             | Kotlin and Java | A project opened in safe mode runs no build scripts or run configurations until the user trusts it. |
-| [VS Code Workspace Trust](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust) | TypeScript      | Extensions disable features that run workspace code until the user trusts the folder.               |
-| [fish shell](https://github.com/fish-shell/fish-shell/security/policy)                           | Rust            | The shell the plugin launches; private reports by email, best effort.                               |
-| [IntelliJ Platform](https://github.com/JetBrains/intellij-community/security/policy)             | Kotlin and Java | Vulnerabilities in the IDE platform itself go to JetBrains, not to plugin authors.                  |
+| Project                                                                                          | Language        | Where it draws the line                                                                              |
+| ------------------------------------------------------------------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- |
+| [JetBrains project trust](https://www.jetbrains.com/help/idea/project-security.html)             | Kotlin and Java | A project opened in Safe Mode restricts executing code, builds and scripts until the user trusts it. |
+| [VS Code Workspace Trust](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust) | TypeScript      | Extensions disable features that run workspace code until the user trusts the folder.                |
+| [fish shell](https://github.com/fish-shell/fish-shell/security/policy)                           | Rust            | The shell the plugin launches; private reports by email, best effort.                                |
+| [IntelliJ Platform](https://github.com/JetBrains/intellij-community/security/policy)             | Kotlin and Java | JetBrains' reporting policy for the platform the plugin runs on.                                     |
 
 ## Trusted
 
 An attacker who controls any of these already has what jetbrains-fish could give them:
 
-- The user, the IDE and the run configurations the user starts.
-- The `fish` and `fish-lsp` binaries from the configured path or `PATH`.
+- The user, the IDE and the run configurations the user starts, including the `fish` path a run configuration names.
+- The `fish-lsp` path from the IDE-level settings, which no project file can set, and the binaries on `PATH`.
 
 ## Untrusted inputs
 
@@ -74,6 +75,13 @@ Release carries the same ZIP with GitHub's release attestation. Every workflow p
 | A shared run configuration runs `evil.fish` when the user starts it | Not a vulnerability | The user started it; the IDE's project trust governs shared configurations. |
 | fish-lsp misbehaves on a crafted file                               | Not ours            | Report it to fish-lsp.                                                      |
 | Highlighting breaks on nested command substitution                  | Bug                 | Lexer correctness.                                                          |
+
+## Severity
+
+- **High:** the plugin executes a script or another program without the user starting a run configuration.
+- **Medium:** a run configuration argument reaches a shell as code, or highlighting makes the plugin itself run a
+  program or touch other files.
+- **Low:** a lexer hang or crash on a crafted `.fish` file.
 
 ## Accepted risks
 
