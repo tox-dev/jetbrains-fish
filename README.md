@@ -3,6 +3,8 @@
 [![Build](https://github.com/tox-dev/jetbrains-fish/actions/workflows/check.yaml/badge.svg)](https://github.com/tox-dev/jetbrains-fish/actions/workflows/check.yaml)
 [![Version](https://img.shields.io/jetbrains/plugin/v/29973.svg)](https://plugins.jetbrains.com/plugin/29973-fish-shell)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/29973.svg)](https://plugins.jetbrains.com/plugin/29973-fish-shell)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tox-dev/jetbrains-fish/badge)](https://scorecard.dev/viewer/?uri=github.com/tox-dev/jetbrains-fish)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16270/badge)](https://www.bestpractices.dev/projects/16270)
 
 This plugin provides comprehensive language support for [Fish shell](https://fishshell.com/) scripts in JetBrains IDEs.
 
