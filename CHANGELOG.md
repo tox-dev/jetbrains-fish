@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 <!-- towncrier release notes start -->
 
+<a name="release-0-1-11"></a>
+
+## 0.1.11 (2026-11-04)
+
+<a name="release-0-1-11-packaging"></a>
+
+### Packaging
+
+- Releases now run on the shared tox-dev/github-workflows pipeline, with a locked release toolchain and generated GitHub
+  Release notes ([#154](https://github.com/tox-dev/jetbrains-fish/pull/154)) by
+  [@gaborbernat](https://github.com/gaborbernat).
+
 <a name="release-0-1-10"></a>
 
 ## [0.1.10] - 2026-08-03
