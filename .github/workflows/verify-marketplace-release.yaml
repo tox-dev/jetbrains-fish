@@ -41,6 +41,7 @@ jobs:
           archives=(dist/*-signed.zip)
           echo "path=${archives[0]}" >>"$GITHUB_OUTPUT"
       - name: 🔍 Check GitHub asset digest
+        id: digest
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
@@ -52,8 +53,12 @@ jobs:
           expected=$(jq -r --arg name "$name" '[.assets[] | select(.name == $name) | .digest] |
             if length == 1 then .[0] else error("signed asset set differs") end' "$RUNNER_TEMP/release.json")
           test "$expected" = "sha256:$(sha256sum "$ARCHIVE" | cut -d' ' -f1)"
+          echo "sha256=${expected#sha256:}" >>"$GITHUB_OUTPUT"
       - name: 🔍 Compare public Marketplace member bytes
-        env:
-          TAG: ${{ inputs.tag }}
-          ARCHIVE: ${{ steps.archive.outputs.path }}
-        run: release-creator marketplace --plugin-id com.github.toxdev.fish --version "${TAG#v}" --archive "$ARCHIVE" --mode verify
+        uses: tox-dev/github-workflows/stage-jetbrains-marketplace@bceb5c005e19823dc8835f536f53f172ae223927 # 6.5.0
+        with:
+          archive: ${{ steps.archive.outputs.path }}
+          sha256: ${{ steps.digest.outputs.sha256 }}
+          plugin-id: com.github.toxdev.fish
+          version: ${{ inputs.tag }}
+          mode: verify
