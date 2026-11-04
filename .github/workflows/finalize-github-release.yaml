@@ -63,7 +63,7 @@ jobs:
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/notes
       - name: 🚀 Publish GitHub release
-        uses: tox-dev/github-workflows/publish-github-release@57a765127aae73adf7d0e24a7fe0f067f2d3ea3e # 6.2.1
+        uses: tox-dev/github-workflows/publish-github-release@2c1f5e4ceda37c41eb8367b5cbeaa741aa60a566 # 6.5.2
         env:
           GH_TOKEN: ${{ github.token }}
         with:
