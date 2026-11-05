@@ -41,3 +41,7 @@ the source tag run ID and the artifact IDs for `marketplace-acceptance`, `plugin
 that run. The finalizer creates or resumes the GitHub Release. It does not upload to Marketplace. A full tag rerun
 cannot repeat a pending Marketplace upload; if the upload result has no acceptance receipt, reconcile it manually with
 JetBrains before continuing.
+
+## Tests
+
+Add a test for every new feature and bug fix. A change without a test needs a reason in the pull request description.
