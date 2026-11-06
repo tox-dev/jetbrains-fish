@@ -18,9 +18,7 @@ on:
         description: Release notes artifact ID from that run
         required: true
         type: string
-permissions:
-  actions: read
-  contents: write
+permissions: {}
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
@@ -28,6 +26,9 @@ jobs:
   finalize:
     name: 🚀 Finalize GitHub Release
     runs-on: ubuntu-26.04
+    permissions:
+      actions: read # download artifacts from the tag release run
+      contents: write # create the GitHub release and upload its assets
     environment: release
     steps:
       - name: 🔍 Verify the original tag run
