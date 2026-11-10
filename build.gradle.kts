@@ -125,12 +125,6 @@ intellijPlatform {
     }
 }
 
-ktlint {
-    filter {
-        exclude("**/gen/**")
-    }
-}
-
 changelog {
     groups.empty()
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
