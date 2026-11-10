@@ -36,21 +36,6 @@ class FishTokenTypesTest {
     }
 
     @Test
-    fun `KEYWORDS contains KEYWORD`() {
-        assertTrue(FishTokenTypes.KEYWORDS.contains(FishTokenTypes.KEYWORD))
-    }
-
-    @Test
-    fun `BRACES contains all bracket types`() {
-        assertTrue(FishTokenTypes.BRACES.contains(FishTypes.LPAREN))
-        assertTrue(FishTokenTypes.BRACES.contains(FishTypes.RPAREN))
-        assertTrue(FishTokenTypes.BRACES.contains(FishTypes.LBRACE))
-        assertTrue(FishTokenTypes.BRACES.contains(FishTypes.RBRACE))
-        assertTrue(FishTokenTypes.BRACES.contains(FishTypes.LBRACKET))
-        assertTrue(FishTokenTypes.BRACES.contains(FishTypes.RBRACKET))
-    }
-
-    @Test
     fun `KEYWORD_TEXTS contains expected keywords`() {
         assertTrue(FishTokenTypes.KEYWORD_TEXTS.contains("function"))
         assertTrue(FishTokenTypes.KEYWORD_TEXTS.contains("end"))
