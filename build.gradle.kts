@@ -75,6 +75,18 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.JUnit5)
     }
+    // ide-starter, which the IntelliJ Platform plugin adds to the UI tests, resolves releases with open advisories.
+    constraints {
+        listOf(
+            "at.yawk.lz4:lz4-java:1.11.4",
+            "com.google.guava:guava:33.7.2-jre",
+            "io.netty:netty-codec-compression:4.2.17.Final",
+            "io.netty:netty-codec-http:4.2.17.Final",
+            "io.netty:netty-codec-http2:4.2.17.Final",
+            "io.netty:netty-handler:4.2.17.Final",
+            "org.bouncycastle:bcprov-jdk18on:1.85",
+        ).forEach { add("testUiImplementation", it) }
+    }
 }
 
 // JFlex lexer generation using Grammar-Kit plugin
