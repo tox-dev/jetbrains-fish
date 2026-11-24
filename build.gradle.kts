@@ -78,13 +78,13 @@ dependencies {
     // ide-starter, which the IntelliJ Platform plugin adds to the UI tests, resolves releases with open advisories.
     constraints {
         listOf(
-            "at.yawk.lz4:lz4-java:1.11.4",
-            "com.google.guava:guava:33.7.2-jre",
-            "io.netty:netty-codec-compression:4.2.17.Final",
-            "io.netty:netty-codec-http:4.2.17.Final",
-            "io.netty:netty-codec-http2:4.2.17.Final",
-            "io.netty:netty-handler:4.2.17.Final",
-            "org.bouncycastle:bcprov-jdk18on:1.85",
+            "at.yawk.lz4:lz4-java:1.14.1",
+            "com.google.guava:guava:33.8.0-jre",
+            "io.netty:netty-codec-compression:4.2.21.Final",
+            "io.netty:netty-codec-http:4.2.21.Final",
+            "io.netty:netty-codec-http2:4.2.21.Final",
+            "io.netty:netty-handler:4.2.21.Final",
+            "org.bouncycastle:bcprov-jdk18on:1.87",
         ).forEach { add("testUiImplementation", it) }
     }
 }
